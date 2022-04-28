@@ -1,8 +1,26 @@
 version: 1
 default_environment: dev
 project_id: c48d5eca-4f6c-45ab-af89-a7a7f875379a
+send_anonymous_usage_stats: false
+plugins:
+  extractors:
+  - name: tap-ccxt
+    namespace: tap_ccxt
+    pip_url: git+ssh://git@github.com/superkeyio/tap-ccxt.git
+    capabilities:
+    - state
+    - catalog
+    - discover
+    config:
+      start_date: '2010-01-01T00:00:00Z'
+    settings:
+    # TODO: To configure using Meltano, declare settings and their types here:
+      - name: start_date
+      - name: password
+        kind: password
+      - name: start_date
+        value: '2010-01-01T00:00:00Z'
 environments:
 - name: dev
 - name: staging
 - name: prod
-send_anonymous_usage_stats: false
