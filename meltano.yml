@@ -4,23 +4,49 @@ project_id: c48d5eca-4f6c-45ab-af89-a7a7f875379a
 send_anonymous_usage_stats: false
 plugins:
   extractors:
-  - name: tap-ccxt
-    namespace: tap_ccxt
-    pip_url: git+ssh://git@github.com/superkeyio/tap-ccxt.git
-    capabilities:
-    - state
-    - catalog
-    - discover
-    config:
-      start_date: '2010-01-01T00:00:00Z'
-    settings:
-    # TODO: To configure using Meltano, declare settings and their types here:
-      - name: start_date
-      - name: password
-        kind: password
-      - name: start_date
-        value: '2010-01-01T00:00:00Z'
+    - name: tap-ccxt
+      namespace: tap_ccxt
+      pip_url: git+ssh://git@github.com/superkeyio/tap-ccxt.git
+      capabilities:
+        - state
+        - catalog
+        - discover
+      settings:
+        - name: start_date
+        - name: exchanges
+      config:
+        {
+          "exchanges":
+            [
+              {
+                "id": "binance",
+                "symbols":
+                  [
+                    { "symbol": "TRIBE/USDT", "timeframe": "1m" },
+                    { "symbol": "ETH/USDT", "timeframe": "1m" },
+                  ],
+              },
+              {
+                "id": "ftx",
+                "symbols":
+                  [
+                    { "symbol": "BTC/USD", "timeframe": "1m" },
+                    { "symbol": "LOOKS/USD", "timeframe": "1m" },
+                    { "symbol": "WBTC/USD", "timeframe": "1m" },
+                  ],
+              },
+              {
+                "id": "gateio",
+                "symbols":
+                  [
+                    { "symbol": "FEI/USDT", "timeframe": "1m" },
+                    { "symbol": "RAI/USDT", "timeframe": "1m" },
+                  ],
+              },
+            ],
+          "start_date": "2022-04-01T00:00:00Z",
+        }
 environments:
-- name: dev
-- name: staging
-- name: prod
+  - name: dev
+  - name: staging
+  - name: prod
