@@ -24,15 +24,15 @@ plugins:
                 timeframe: 1m
               - symbol: BTC/USDT
                 timeframe: 1m
-          - id: gateio
-            symbols:
-              - symbol: FEI/USDT
-                timeframe: 1m
-              - symbol: RAI/USDT
-                timeframe: 1m
           - id: ftx
             symbols:
-              - symbol: LOOKS/USDT
+              - symbol: LOOKS/USD
+                timeframe: 1m
+          - id: gateio
+            symbols:
+              - symbol: FEI_USDT
+                timeframe: 1m
+              - symbol: RAI_USDT
                 timeframe: 1m
         start_date: "2022-04-01T00:00:00Z"
   loaders:
@@ -41,18 +41,15 @@ plugins:
       pip_url: pipelinewise-target-postgres
       config:
         add_metadata_columns: true
-        dbname: aloe_analytics
         default_target_schema: $MELTANO_EXTRACT__LOAD_SCHEMA
         flush_all_streams: true
         parallelism: 2
-        user: mattevenson
-        password: password
 schedules:
   - name: ccxt-to-postgres
     extractor: tap-ccxt
     loader: target-postgres
     transform: skip
-    interval: "@once"
+    interval: "* * * * *"
     start_date: 2022-04-01 00:00:00
 environments:
   - name: dev
