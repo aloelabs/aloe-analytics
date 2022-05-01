@@ -15,37 +15,45 @@ plugins:
         - name: start_date
         - name: exchanges
       config:
-        {
-          "exchanges":
-            [
-              {
-                "id": "binance",
-                "symbols":
-                  [
-                    { "symbol": "TRIBE/USDT", "timeframe": "1m" },
-                    { "symbol": "ETH/USDT", "timeframe": "1m" },
-                  ],
-              },
-              {
-                "id": "ftx",
-                "symbols":
-                  [
-                    { "symbol": "BTC/USD", "timeframe": "1m" },
-                    { "symbol": "LOOKS/USD", "timeframe": "1m" },
-                    { "symbol": "WBTC/USD", "timeframe": "1m" },
-                  ],
-              },
-              {
-                "id": "gateio",
-                "symbols":
-                  [
-                    { "symbol": "FEI/USDT", "timeframe": "1m" },
-                    { "symbol": "RAI/USDT", "timeframe": "1m" },
-                  ],
-              },
-            ],
-          "start_date": "2022-04-01T00:00:00Z",
-        }
+        exchanges:
+          - id: binance
+            symbols:
+              - symbol: TRIBE/USDT
+                timeframe: 1m
+              - symbol: ETH/USDT
+                timeframe: 1m
+              - symbol: BTC/USDT
+                timeframe: 1m
+          - id: gateio
+            symbols:
+              - symbol: FEI/USDT
+                timeframe: 1m
+              - symbol: RAI/USDT
+                timeframe: 1m
+          - id: ftx
+            symbols:
+              - symbol: LOOKS/USDT
+                timeframe: 1m
+        start_date: "2022-04-01T00:00:00Z"
+  loaders:
+    - name: target-postgres
+      variant: transferwise
+      pip_url: pipelinewise-target-postgres
+      config:
+        add_metadata_columns: true
+        dbname: aloe_analytics
+        default_target_schema: $MELTANO_EXTRACT__LOAD_SCHEMA
+        flush_all_streams: true
+        parallelism: 2
+        user: mattevenson
+        password: password
+schedules:
+  - name: ccxt-to-postgres
+    extractor: tap-ccxt
+    loader: target-postgres
+    transform: skip
+    interval: "@once"
+    start_date: 2022-04-01 00:00:00
 environments:
   - name: dev
   - name: staging
