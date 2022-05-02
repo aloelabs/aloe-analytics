@@ -44,6 +44,12 @@ plugins:
         default_target_schema: $MELTANO_EXTRACT__LOAD_SCHEMA
         flush_all_streams: true
         parallelism: 2
+  orchestrators:
+    - name: airflow
+      pip_url: apache-airflow==2.1.2 --constraint https://raw.githubusercontent.com/apache/airflow/constraints-2.1.2/constraints-${MELTANO__PYTHON_VERSION}.txt
+  files:
+    - name: airflow
+      pip_url: git+https://gitlab.com/meltano/files-airflow.git
 schedules:
   - name: ccxt-to-postgres
     extractor: tap-ccxt
