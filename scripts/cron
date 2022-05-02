@@ -1,0 +1,1 @@
+* * * * * meltano elt tap-ccxt target-postgres --job_id=ccxt-to-postgres

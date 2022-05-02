@@ -6,8 +6,7 @@ FROM $MELTANO_IMAGE
 
 WORKDIR /project
 
-# install ssh client and git
-RUN apt install openssh-client git
+RUN apt-get update -y && apt-get install -y openssh-client git cron
 
 # download public key for github.com
 RUN mkdir -p -m 0600 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
@@ -32,4 +31,16 @@ COPY . .
 # Expose default port used by `meltano ui`
 EXPOSE 5000
 
-ENTRYPOINT ["meltano"]
+# Copy hello-cron file to the cron.d directory
+COPY ./scripts/cron /etc/cron.d/cron
+
+# Give execution rights on the cron job
+RUN chmod 0644 /etc/cron.d/cron
+
+# Apply cron job
+RUN crontab /etc/cron.d/cron
+
+# Create the log file to be able to run tail
+RUN touch /var/log/cron.log
+
+ENTRYPOINT [ "cron", "&&", "tail", "-f", "/var/log/cron.log" ]
