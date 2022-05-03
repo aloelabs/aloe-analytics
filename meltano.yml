@@ -41,9 +41,21 @@ plugins:
       pip_url: pipelinewise-target-postgres
       config:
         add_metadata_columns: true
-        default_target_schema: $MELTANO_EXTRACT__LOAD_SCHEMA
         flush_all_streams: true
         batch_size_rows: 100
+  # orchestrators:
+  #   - name: airflow
+  #     pip_url: psycopg2 apache-airflow==2.1.2 --constraint https://raw.githubusercontent.com/apache/airflow/constraints-2.1.2/constraints-${MELTANO__PYTHON_VERSION}.txt
+  # files:
+  #   - name: airflow
+  #     pip_url: git+https://gitlab.com/meltano/files-airflow.git
+# schedules:
+#   - name: ccxt-to-postgres
+#     extractor: tap-ccxt
+#     loader: target-postgres
+#     transform: skip
+#     interval: "* * * * *"
+#     start_date: 2022-04-01 00:00:00
 environments:
   - name: dev
   - name: staging

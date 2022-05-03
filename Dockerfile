@@ -37,7 +37,7 @@ COPY crontab /etc/cron.d/crontab
 # Give execution rights on the cron job
 RUN chmod 0644 /etc/cron.d/crontab
 
-RUN chmod +x /project/scripts/run_pipeline.sh
+RUN chmod +x /project/scripts/*
 
 # Apply cron job
 RUN crontab /etc/cron.d/crontab
@@ -45,9 +45,7 @@ RUN crontab /etc/cron.d/crontab
 # Create the log file to be able to run tail
 RUN touch /var/log/cron.log
 
-ENTRYPOINT []
+# ENTRYPOINT ["meltano", "invoke", "airflow", "scheduler"]
 
-RUN chmod +x /project/scripts/start_container.sh
-
-CMD /project/scripts/start_container.sh
+ENTRYPOINT ["/project/scripts/start_container.sh"]
 
