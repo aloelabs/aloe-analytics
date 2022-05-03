@@ -32,15 +32,22 @@ COPY . .
 EXPOSE 5000
 
 # Copy hello-cron file to the cron.d directory
-COPY ./scripts/cron /etc/cron.d/cron
+COPY crontab /etc/cron.d/crontab
 
 # Give execution rights on the cron job
-RUN chmod 0644 /etc/cron.d/cron
+RUN chmod 0644 /etc/cron.d/crontab
+
+RUN chmod +x /project/scripts/run_pipeline.sh
 
 # Apply cron job
-RUN crontab /etc/cron.d/cron
+RUN crontab /etc/cron.d/crontab
 
 # Create the log file to be able to run tail
 RUN touch /var/log/cron.log
 
-ENTRYPOINT [ "cron", "&&", "tail", "-f", "/var/log/cron.log" ]
+ENTRYPOINT []
+
+RUN chmod +x /project/scripts/start_container.sh
+
+CMD /project/scripts/start_container.sh
+
