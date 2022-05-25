@@ -42,6 +42,13 @@ plugins:
         - state
         - catalog
         - discover
+    - name: tap-thegraph # TODO: add config values for tap-ethereum
+      namespace: tap_thegraph
+      pip_url: git+ssh://git@github.com/superkeyio/tap-thegraph.git
+      capabilities:
+        - state
+        - catalog
+        - discover
   loaders:
     - name: target-postgres
       variant: transferwise
