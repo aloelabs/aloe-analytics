@@ -35,6 +35,13 @@ plugins:
               - symbol: RAI_USDT
                 timeframe: 1m
         start_date: "2022-04-01T00:00:00Z"
+    - name: tap-ethereum # TODO: add config values for tap-ethereum
+      namespace: tap_ethereum
+      pip_url: git+ssh://git@github.com/superkeyio/tap-ethereum.git
+      capabilities:
+        - state
+        - catalog
+        - discover
   loaders:
     - name: target-postgres
       variant: transferwise
