@@ -37,7 +37,7 @@ plugins:
     #     start_date: "2022-04-01T00:00:00Z"
     - name: tap-ethereum # TODO: add config values for tap-ethereum
       namespace: tap_ethereum
-      pip_url: git+ssh://git@github.com/superkeyio/tap-ethereum.git
+      pip_url: git+ssh://git@github.com/superkeyio/tap-ethereum.git@ec72ce0da91d598079bc3a5ba8e7f945bce1dd2d
       capabilities:
         - state
         - catalog
@@ -122,13 +122,13 @@ plugins:
             getters:
               - usersAmounts
               - totalSupply
-    - name: tap-thegraph # TODO: add config values for tap-ethereum
-      namespace: tap_thegraph
-      pip_url: git+ssh://git@github.com/superkeyio/tap-thegraph.git
-      capabilities:
-        - state
-        - catalog
-        - discover
+    # - name: tap-thegraph # TODO: add config values for tap-ethereum
+    #   namespace: tap_thegraph
+    #   pip_url: git+ssh://git@github.com/superkeyio/tap-thegraph.git
+    #   capabilities:
+    #     - state
+    #     - catalog
+    #     - discover
   loaders:
     - name: target-postgres
       variant: transferwise
