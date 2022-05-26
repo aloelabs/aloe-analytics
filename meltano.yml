@@ -81,7 +81,7 @@ plugins:
               - getUnderlyingBalances
               - totalSupply
           - name: Visor
-            abi: USDC/ETH
+            abi: ./abi/visor.json
             instances:
               - name: USDC/WETH
                 address: 0x716bd8A7f8A44B010969A1825ae5658e7a18630D
@@ -89,8 +89,33 @@ plugins:
             getters:
               - getTotalAmounts
               - totalSupply
-
-
+          - name: Charm
+            abi: ./abi/charm.json
+            instances:
+              - name: USDC/WETH
+                address: 0x9bF7B46C7aD5ab62034e9349Ab912C0345164322
+                start_block: 12737034
+            getters:
+              - getTotalAmounts
+              - totalSupply
+          - name: Uni V2
+            abi: ./abi/uni_v2.json
+            instances:
+              - name: USDC/WETH
+                address: 0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc
+                start_block: 10008355
+            getters:
+              - getReserves
+              - totalSupply
+          - name: Popsicle
+            abi: ./abi/popsicle.json
+            instances:
+              - name: USDC/WETH
+                address: 0xaE7b92C8B14E7bdB523408aE0A6fFbf3f589adD9
+                start_block: 13552143
+            getters:
+              - usersAmounts
+              - totalSupply
     - name: tap-thegraph # TODO: add config values for tap-ethereum
       namespace: tap_thegraph
       pip_url: git+ssh://git@github.com/superkeyio/tap-thegraph.git
