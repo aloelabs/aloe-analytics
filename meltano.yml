@@ -6,7 +6,7 @@ plugins:
   extractors:
     - name: tap-ccxt
       namespace: tap_ccxt
-      pip_url: git+ssh://git@github.com/superkeyio/tap-ccxt.git@3f2f6aff7c008b8fd3d4b6fbc0449b251541f99e
+      pip_url: git+ssh://git@github.com/superkeyio/tap-ccxt.git@1b2c59b5c8fb9ef63c6275ca647ea3d52be690e2
       capabilities:
         - state
         - catalog
@@ -50,6 +50,13 @@ plugins:
         - state
         - catalog
         - discover
+      settings:
+      - name: ethereum_rpc
+      - name: contracts
+      - name: etherscan_api_key
+      - name: confirmations
+      - name: batch_size
+      - name: concurrency
       config:
         concurrency: 50
         batch_size: 100
@@ -125,7 +132,7 @@ plugins:
               - totalSupply
     - name: tap-thegraph
       namespace: tap_thegraph
-      pip_url: git+ssh://git@github.com/superkeyio/tap-thegraph.git@cb195dab7f440f5bea988d29919b69a4268d0cf4
+      pip_url: git+ssh://git@github.com/superkeyio/tap-thegraph.git@576bb0c1d01184d3c4d528a66f3009008ab3f053
       capabilities:
         - state
         - catalog
@@ -133,9 +140,10 @@ plugins:
       config:
         subgraphs:
           - url: https://api.thegraph.com/subgraphs/name/stakewise/ethereum-mainnet
-          - entities:
-            name: Block
-            created_at: timestamp
+            entities:
+              - name: Block
+                created_at: id
+                since: "14261737"
   loaders:
     - name: target-postgres
       variant: transferwise
@@ -143,7 +151,7 @@ plugins:
       config:
         add_metadata_columns: true
         flush_all_streams: true
-        batch_size_rows: 100
+        batch_size_rows: 1000
   # orchestrators:
   #   - name: airflow
   #     pip_url: psycopg2 apache-airflow==2.1.2 --constraint https://raw.githubusercontent.com/apache/airflow/constraints-2.1.2/constraints-${MELTANO__PYTHON_VERSION}.txt
