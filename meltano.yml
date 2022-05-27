@@ -4,51 +4,52 @@ project_id: c48d5eca-4f6c-45ab-af89-a7a7f875379a
 send_anonymous_usage_stats: false
 plugins:
   extractors:
-    # - name: tap-ccxt
-    #   namespace: tap_ccxt
-    #   pip_url: git+ssh://git@github.com/superkeyio/tap-ccxt.git
-    #   capabilities:
-    #     - state
-    #     - catalog
-    #     - discover
-    #   settings:
-    #     - name: start_date
-    #     - name: exchanges
-    #   config:
-    #     exchanges:
-    #       - id: binance
-    #         symbols:
-    #           - symbol: TRIBE/USDT
-    #             timeframe: 1m
-    #           - symbol: ETH/USDT
-    #             timeframe: 1m
-    #           - symbol: BTC/USDT
-    #             timeframe: 1m
-    #       - id: ftx
-    #         symbols:
-    #           - symbol: LOOKS/USD
-    #             timeframe: 1m
-    #       - id: gateio
-    #         symbols:
-    #           - symbol: FEI_USDT
-    #             timeframe: 1m
-    #           - symbol: RAI_USDT
-    #             timeframe: 1m
-    #     start_date: "2022-04-01T00:00:00Z"
-    - name: tap-ethereum # TODO: add config values for tap-ethereum
-      namespace: tap_ethereum
-      pip_url: git+ssh://git@github.com/superkeyio/tap-ethereum.git@ec72ce0da91d598079bc3a5ba8e7f945bce1dd2d
+    - name: tap-ccxt
+      namespace: tap_ccxt
+      pip_url: git+ssh://git@github.com/superkeyio/tap-ccxt.git@3f2f6aff7c008b8fd3d4b6fbc0449b251541f99e
       capabilities:
         - state
         - catalog
         - discover
-      settings:
-        - name: ethereum_rpc
-        - name: contracts
-        - name: etherscan_api_key
-        - name: confirmations
-        - name: batch_size
-        - name: concurrency
+      config:
+        exchanges:
+          - id: binance
+            pairs:
+              - base: TRIBE
+                quote: USDT
+                timeframe: 1m
+                start_date: "2022-04-01T00:00:00Z"
+              - base: ETH
+                quote: USDT
+                timeframe: 1m
+                start_date: "2022-04-01T00:00:00Z"
+              - base: BTC
+                quote: USDT
+                timeframe: 1m
+                start_date: "2022-04-01T00:00:00Z"
+          - id: ftx
+            pairs:
+              - base: LOOKS
+                quote: USD
+                timeframe: 1m
+                start_date: "2022-04-01T00:00:00Z"
+          - id: gateio
+            pairs:
+              - base: FEI
+                quote: USDT
+                timeframe: 1m
+                start_date: "2022-04-01T00:00:00Z"
+              - base: RAI
+                quote: USDT
+                timeframe: 1m
+                start_date: "2022-04-01T00:00:00Z"
+    - name: tap-ethereum
+      namespace: tap_ethereum
+      pip_url: git+ssh://git@github.com/superkeyio/tap-ethereum.git@7b2bab5bad84cb96be4beed0f920fdfdc2be1f78
+      capabilities:
+        - state
+        - catalog
+        - discover
       config:
         concurrency: 50
         batch_size: 100
@@ -122,13 +123,19 @@ plugins:
             getters:
               - usersAmounts
               - totalSupply
-    # - name: tap-thegraph # TODO: add config values for tap-ethereum
-    #   namespace: tap_thegraph
-    #   pip_url: git+ssh://git@github.com/superkeyio/tap-thegraph.git
-    #   capabilities:
-    #     - state
-    #     - catalog
-    #     - discover
+    - name: tap-thegraph
+      namespace: tap_thegraph
+      pip_url: git+ssh://git@github.com/superkeyio/tap-thegraph.git@cb195dab7f440f5bea988d29919b69a4268d0cf4
+      capabilities:
+        - state
+        - catalog
+        - discover
+      config:
+        subgraphs:
+          - url: https://api.thegraph.com/subgraphs/name/stakewise/ethereum-mainnet
+          - entities:
+            name: Block
+            created_at: timestamp
   loaders:
     - name: target-postgres
       variant: transferwise
