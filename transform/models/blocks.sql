@@ -1,5 +1,11 @@
-select
-    to_timestamp(cast(mainnet_block.timestamp as bigint)) as timestamp,
-    cast(mainnet_block.id as bigint) as block_number
-from
-    tap_thegraph.mainnet_block
+{{ config(
+    materialized = "incremental"
+) }}
+
+SELECT
+    TO_TIMESTAMP(CAST(mainnet_block.timestamp AS bigint)) AS TIMESTAMP,
+    CAST(
+        mainnet_block.id AS bigint
+    ) AS block_number
+FROM
+    tap_thegraph.mainnet_block -- TODO: fix the replication key for tap-thegraph (it always starts from the beginning)
