@@ -1,0 +1,1 @@
+SELECT ohlcv.timestamp, ohlcv.exchange, ohlcv.base, ohlcv.quote, (ohlcv.open + ohlcv.close) / 2 as price FROM tap_ccxt.ohlcv
