@@ -130,20 +130,22 @@ plugins:
   #       getters:
   #       - usersAmounts
   #       - totalSupply
-  # - name: tap-thegraph
-  #   namespace: tap_thegraph
-  #   pip_url: git+ssh://git@github.com/superkeyio/tap-thegraph.git@576bb0c1d01184d3c4d528a66f3009008ab3f053
-  #   capabilities:
-  #   - state
-  #   - catalog
-  #   - discover
-  #   config:
-  #     subgraphs:
-  #     - url: https://api.thegraph.com/subgraphs/name/stakewise/ethereum-mainnet
-  #       entities:
-  #       - name: Block
-  #         created_at: id
-  #         since: '14261737'
+  - name: tap-thegraph
+    namespace: tap_thegraph
+    pip_url: git+ssh://git@github.com/superkeyio/tap-thegraph.git@f3a805b3277152b940844a7e2eb0d1081002138d
+    capabilities:
+    - state
+    - catalog
+    - discover
+    config:
+      subgraphs:
+      - url: https://api.thegraph.com/subgraphs/name/stakewise/ethereum-mainnet
+        entities:
+        - name: Block
+          created_at: id
+          # since: "14261737"
+          since: "14842743"
+      batch_size: 1000
   loaders:
   - name: target-postgres
     variant: transferwise
