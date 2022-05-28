@@ -32,11 +32,10 @@ WITH observations AS (
             pools.token1_decimals
         ) AS inventory1,
         p0.price AS token0_price,
-        p1.price AS token1_price,
-        o.total_supply / power(
-            10,
-            pools.pool_token_decimals
-        ) AS total_supply
+        p1.price AS token1_price -- ,o.total_supply / power(
+        --     10,
+        --     pools.pool_token_decimals
+        -- ) AS total_supply
     FROM
         {{ ref(
             'aloe_blend'
