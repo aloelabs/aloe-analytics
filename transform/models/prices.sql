@@ -1,7 +1,3 @@
-{{ config(
-    materialized = "incremental"
-) }}
-
 SELECT
     (
         tsrange(
