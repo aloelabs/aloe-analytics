@@ -19,8 +19,9 @@ WITH observations AS (
     SELECT
         o.block_number,
         p0.timestamp,
-        p0.symbol AS token0_symbol,
-        p1.symbol AS token1_symbol,
+        pools.token0_symbol,
+        pools.token1_symbol,
+        pools.pool_token_symbol,
         o.address,
         o.inventory0 / power(
             10,
@@ -31,13 +32,17 @@ WITH observations AS (
             pools.token1_decimals
         ) AS inventory1,
         p0.price AS token0_price,
-        p1.price AS token1_price
+        p1.price AS token1_price,
+        o.total_supply / power(
+            10,
+            pools.pool_token_decimals
+        ) AS total_supply
     FROM
         {{ ref(
             'aloe_blend'
         ) }}
         o
-        JOIN {{ ref('pools_with_symbols') }}
+        JOIN {{ ref('pools_with_tokens') }}
         pools
         ON o.address = pools.pool_address
         JOIN {{ ref('prices_per_block') }}
