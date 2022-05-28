@@ -2,7 +2,7 @@ WITH aloe_blend_total_supply AS (
     SELECT
         block_number,
         CAST(
-            outputs__ AS bigint
+            outputs__ AS numeric
         ) AS total_supply,
         "address"
     FROM
@@ -12,10 +12,10 @@ aloe_blend_get_inventory AS (
     SELECT
         block_number,
         CAST (
-            outputs__inventory0 AS bigint
+            outputs__inventory0 AS numeric
         ) AS inventory0,
         CAST (
-            outputs__inventory1 AS bigint
+            outputs__inventory1 AS numeric
         ) AS inventory1,
         "address"
     FROM
