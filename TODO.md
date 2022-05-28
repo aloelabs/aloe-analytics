@@ -7,3 +7,4 @@
 - Etherscan API for getting ABIs (get that working again)
 - Camelcaseing / fixing contract names in stream IDs somehow
 - Maybe fixing the trading pair somehow (so I can just get price), delimit
+- CHAIN ID 

@@ -4,8 +4,7 @@ SELECT
     t0.decimals AS token0_decimals,
     t1.symbol AS token1_symbol,
     t1.decimals AS token1_decimals,
-    pt.symbol AS pool_token_symbol,
-    pt.decimals AS pool_token_decimals
+    pt.symbol AS pool_token_symbol
 FROM
     {{ ref('pools') }}
     p
