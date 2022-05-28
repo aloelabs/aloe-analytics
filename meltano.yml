@@ -132,7 +132,7 @@ plugins:
   #       - totalSupply
   - name: tap-thegraph
     namespace: tap_thegraph
-    pip_url: git+ssh://git@github.com/superkeyio/tap-thegraph.git@f3a805b3277152b940844a7e2eb0d1081002138d
+    pip_url: git+ssh://git@github.com/superkeyio/tap-thegraph.git@91923fbf60d305afa6ff849b88798b72961a5a70
     capabilities:
     - state
     - catalog
