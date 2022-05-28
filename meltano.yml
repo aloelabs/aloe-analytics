@@ -15,14 +15,14 @@ plugins:
       exchanges:
       - id: binance
         pairs:
-        - base: TRIBE
+        # - base: TRIBE
+        #   quote: USDT
+        #   timeframe: 1m
+        #   start_date: '2022-05-25T00:00:00Z'
+        - base: ETH
           quote: USDT
           timeframe: 1m
           start_date: '2022-05-25T00:00:00Z'
-      #   - base: ETH
-      #     quote: USDT
-      #     timeframe: 1m
-      #     start_date: '2022-04-01T00:00:00Z'
       #   - base: BTC
       #     quote: USDT
       #     timeframe: 1m
@@ -43,6 +43,12 @@ plugins:
       #     quote: USDT
       #     timeframe: 1m
       #     start_date: '2022-04-01T00:00:00Z'
+      - id: kraken
+        pairs:
+          - base: USDC
+            quote: USD
+            timeframe: 1m
+            start_date: '2022-05-25T00:00:00Z'
   - name: tap-ethereum
     namespace: tap_ethereum
     pip_url: git+ssh://git@github.com/superkeyio/tap-ethereum.git@7b2bab5bad84cb96be4beed0f920fdfdc2be1f78

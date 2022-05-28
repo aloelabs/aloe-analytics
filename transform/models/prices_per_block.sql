@@ -5,5 +5,5 @@ SELECT
     "timestamp"
 FROM
     {{ ref('blocks') }}
-    JOIN {{ ref("prices") }}
+    INNER JOIN {{ ref("prices") }}
     ON "interval" @> "timestamp" :: TIMESTAMP
