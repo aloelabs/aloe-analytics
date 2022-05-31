@@ -1,7 +1,10 @@
 WITH deposits AS (
     SELECT
-        to_address AS "address",
-        amount,
+        pool_address,
+        to_address AS user_address,
+        CAST(
+            amount AS numeric
+        ) AS amount,
         "timestamp",
         block_number
     FROM
@@ -11,7 +14,11 @@ WITH deposits AS (
 ),
 withdrawals AS (
     SELECT
-        from_address AS "address",- amount AS amount,
+        pool_address,
+        from_address AS user_address,
+        CAST(
+            amount AS numeric
+        ) AS amount,
         "timestamp",
         block_number
     FROM
@@ -19,24 +26,56 @@ withdrawals AS (
     WHERE
         from_address != '0x0000000000000000000000000000000000000000'
 ),
--- use a window function
+users AS (
+    SELECT
+        DISTINCT user_address
+    FROM
+        deposits
+),
+blocks_per_user AS (
+    SELECT
+        blocks.*,
+        user_address
+    FROM
+        {{ ref('blocks') }},
+        users
+),
+deposits_and_withdrawals AS (
+    SELECT
+        blocks_per_user.*,
+        SUM(
+            deposits.amount
+        ) over (
+            PARTITION BY user_address
+            ORDER BY
+                block_number ASC rows unbounded preceding
+        ) AS net_deposits,
+        SUM(
+            withdrawals.amount
+        ) over (
+            PARTITION BY user_address
+            ORDER BY
+                block_number ASC rows unbounded preceding
+        ) AS net_withdrawals
+    FROM
+        blocks_per_user
+        LEFT JOIN deposits USING (
+            block_number,
+            user_address
+        )
+        LEFT JOIN withdrawals USING (
+            block_number,
+            user_address
+        )
+)
 SELECT
-    block_number,
-    "timestamp",
-    deposits.address,
-    SUM(
-        deposits.amount
-    ) over (
-        PARTITION BY "address"
-        ORDER BY
-            block_number
-    ) - SUM(
-        withdrawals.amount
-    ) over (
-        PARTITION BY "address"
-        ORDER BY
-            block_number
+    *,
+    COALESCE(
+        net_deposits,
+        0
+    ) - COALESCE(
+        net_withdrawals,
+        0
     ) AS balance
 FROM
-    deposits
-    OUTER JOIN withdrawals USING (block_number)
+    deposits_and_withdrawals
