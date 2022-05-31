@@ -2,9 +2,7 @@ WITH observations AS (
     SELECT
         o.block_number,
         p0.timestamp,
-        pools.token0_symbol,
-        pools.token1_symbol,
-        pools.pool_token_symbol,
+        pools.*,
         o.address,
         o.inventory0 / power(
             10,
