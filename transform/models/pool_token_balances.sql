@@ -39,43 +39,25 @@ blocks_per_user AS (
     FROM
         {{ ref('blocks') }},
         users
-),
-deposits_and_withdrawals AS (
-    SELECT
-        blocks_per_user.*,
-        SUM(
-            deposits.amount
-        ) over (
-            PARTITION BY user_address
-            ORDER BY
-                block_number ASC rows unbounded preceding
-        ) AS net_deposits,
-        SUM(
-            withdrawals.amount
-        ) over (
-            PARTITION BY user_address
-            ORDER BY
-                block_number ASC rows unbounded preceding
-        ) AS net_withdrawals
-    FROM
-        blocks_per_user
-        LEFT JOIN deposits USING (
-            block_number,
-            user_address
-        )
-        LEFT JOIN withdrawals USING (
-            block_number,
-            user_address
-        )
 )
 SELECT
-    *,
-    COALESCE(
-        net_deposits,
-        0
-    ) - COALESCE(
-        net_withdrawals,
-        0
+    blocks_per_user.*,
+    SUM(COALESCE(deposits.amount, 0)) over (
+        PARTITION BY user_address
+        ORDER BY
+            block_number ASC rows unbounded preceding
+    ) - SUM(COALESCE(withdrawals.amount, 0)) over (
+        PARTITION BY user_address
+        ORDER BY
+            block_number ASC rows unbounded preceding
     ) AS balance
 FROM
-    deposits_and_withdrawals
+    blocks_per_user
+    LEFT JOIN deposits USING (
+        block_number,
+        user_address
+    )
+    LEFT JOIN withdrawals USING (
+        block_number,
+        user_address
+    )
