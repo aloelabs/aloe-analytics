@@ -4,7 +4,7 @@ WITH aloe_blend_total_supply AS (
         CAST(
             outputs__ AS numeric
         ) AS total_supply,
-        "address"
+        "address" AS pool_address
     FROM
         tap_ethereum.blend_getters_totalsupply
 ),
@@ -17,7 +17,7 @@ aloe_blend_get_inventory AS (
         CAST (
             outputs__inventory1 AS numeric
         ) AS inventory1,
-        "address"
+        "address" AS pool_address
     FROM
         tap_ethereum.blend_getters_getinventory
 )
@@ -26,6 +26,6 @@ SELECT
 FROM
     aloe_blend_total_supply
     JOIN aloe_blend_get_inventory USING (
-        "address",
+        pool_address,
         block_number
     )

@@ -21,9 +21,7 @@ SELECT
         SELECT
             COALESCE(SUM(tvl), 0)
         FROM
-            {{ ref('pool_returns') }}
-        WHERE
-            "type" = 'aloe_blend'
+            {{ ref('share_price') }}
         GROUP BY
             block_number
         ORDER BY
