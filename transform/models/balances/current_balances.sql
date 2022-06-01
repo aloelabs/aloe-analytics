@@ -26,13 +26,10 @@ total_withdrawals AS (
 )
 SELECT
     user_address,
-    COALESCE(
-        SUM (
-            total_deposits.amount - total_withdrawals.amount
-        ) over (
-            PARTITION BY user_address
-        ),
-        0
+    pool_address,
+    SUM (COALESCE(total_deposits.amount, 0) - COALESCE(total_withdrawals.amount, 0)) over (
+        PARTITION BY user_address,
+        pool_address
     ) AS balance
 FROM
     total_deposits
