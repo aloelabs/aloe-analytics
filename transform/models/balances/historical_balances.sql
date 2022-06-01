@@ -1,37 +1,9 @@
 -- TODO: get pool address working better
-WITH deposits AS (
-    SELECT
-        pool_address,
-        to_address AS user_address,
-        CAST(
-            amount AS numeric
-        ) AS amount,
-        "timestamp",
-        block_number
-    FROM
-        {{ ref('pool_token_transfers') }}
-    WHERE
-        to_address != '0x0000000000000000000000000000000000000000'
-),
-withdrawals AS (
-    SELECT
-        pool_address,
-        from_address AS user_address,
-        CAST(
-            amount AS numeric
-        ) AS amount,
-        "timestamp",
-        block_number
-    FROM
-        {{ ref('pool_token_transfers') }}
-    WHERE
-        from_address != '0x0000000000000000000000000000000000000000'
-),
-users AS (
+WITH users AS (
     SELECT
         DISTINCT user_address
     FROM
-        deposits
+        {{ ref('deposits') }}
 ),
 pools AS (
     SELECT
@@ -66,12 +38,12 @@ SELECT
     ) AS balance
 FROM
     blocks_per_user
-    LEFT JOIN deposits USING (
+    LEFT JOIN {{ ref('deposits') }} USING (
         block_number,
         user_address,
         pool_address
     )
-    LEFT JOIN withdrawals USING (
+    LEFT JOIN {{ ref('withdrawals') }} USING (
         block_number,
         user_address,
         pool_address

@@ -13,15 +13,15 @@ SELECT
         WHERE
             "type" = 'aloe_blend'
     ) AS pool_count,
-    -- (
-    --     SELECT
-    --         COUNT(1)
-    --     FROM
-    --         {{ ref('pool_token_balances') }}
-    --     WHERE
-    --         block_number = latest.block_number
-    --         AND balance > 0
-    -- ) AS users,(
+    (
+        SELECT
+            COUNT(1)
+        FROM
+            {{ ref('current_balances') }}
+        WHERE
+            block_number = latest.block_number
+            AND balance > 0
+    ) AS users,
     (
         SELECT
             COALESCE(SUM(tvl), 0)
