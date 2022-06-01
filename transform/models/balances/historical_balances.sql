@@ -1,13 +1,13 @@
 -- TODO: get pool address working better
-WITH users AS (
+WITH user_addresses AS (
     SELECT
         DISTINCT user_address
     FROM
         {{ ref('deposits') }}
 ),
-pools AS (
+pool_addresses AS (
     SELECT
-        DISTINCT pool_address
+        DISTINCT LOWER(pool_address) AS pool_address
     FROM
         {{ ref('pools') }}
     WHERE
@@ -20,21 +20,16 @@ blocks_per_user AS (
         pool_address
     FROM
         {{ ref('blocks') }},
-        users,
-        pools
+        user_addresses,
+        pool_addresses
 )
 SELECT
     blocks_per_user.*,
-    SUM(COALESCE(deposits.amount, 0)) over (
+    SUM(COALESCE(deposits.amount, 0) - COALESCE(withdrawals.amount, 0)) over (
         PARTITION BY user_address,
         pool_address
         ORDER BY
-            block_number ASC rows unbounded preceding
-    ) - SUM(COALESCE(withdrawals.amount, 0)) over (
-        PARTITION BY user_address,
-        pool_address
-        ORDER BY
-            block_number ASC rows unbounded preceding
+            block_number
     ) AS balance
 FROM
     blocks_per_user
