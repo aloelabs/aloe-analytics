@@ -1,9 +1,3 @@
-WITH latest AS (
-    SELECT
-        MAX(block_number) AS block_number
-    FROM
-        {{ ref('blocks') }}
-)
 SELECT
     (
         SELECT
@@ -15,12 +9,13 @@ SELECT
     ) AS pool_count,
     (
         SELECT
-            COUNT(1)
+            COUNT(
+                DISTINCT user_address
+            )
         FROM
             {{ ref('current_balances') }}
         WHERE
-            block_number = latest.block_number
-            AND balance > 0
+            balance > 0
     ) AS users,
     (
         SELECT
@@ -28,8 +23,11 @@ SELECT
         FROM
             {{ ref('pool_returns') }}
         WHERE
-            block_number = latest.block_number
-            AND "type" = 'aloe_blend'
+            "type" = 'aloe_blend'
+        GROUP BY
+            block_number
+        ORDER BY
+            block_number DESC
+        LIMIT
+            1
     ) AS tvl
-FROM
-    latest

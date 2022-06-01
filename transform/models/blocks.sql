@@ -10,7 +10,7 @@ SELECT
         "id" AS bigint
     ) AS block_number
 FROM
-    tap_thegraph.mainnet_block -- TODO: fix the replication key for tap-thegraph (it always starts from the beginning)
+    tap_thegraph.mainnet_block
 
 {% if is_incremental() %}
 WHERE
