@@ -8,11 +8,11 @@ SELECT
     block_number,
     base AS "symbol",
     price,
-    "timestamp"
+    blocks."timestamp"
 FROM
     {{ ref('blocks') }}
     INNER JOIN {{ ref("prices") }}
-    ON "interval" @> "timestamp" :: TIMESTAMP
+    ON "interval" @> blocks."timestamp" :: TIMESTAMP
 
 {% if is_incremental() %}
 WHERE

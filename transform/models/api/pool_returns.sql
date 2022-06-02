@@ -1,7 +1,9 @@
 SELECT
     observations.block_number,
     blocks.timestamp,
-    pools.*,
+    pools.pool_address,
+    pools.pool_type,
+    pools.chain_id,
     observations.inventory0 / power(
         10,
         pools.token0_decimals

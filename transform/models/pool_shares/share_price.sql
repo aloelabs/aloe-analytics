@@ -24,4 +24,4 @@ FROM
     ON pool_returns.block_number = p1.block_number
     AND pools.token1_symbol = p1.symbol
 WHERE
-    pools."type" = 'aloe_blend'
+    pools.pool_type = 'aloe_blend'

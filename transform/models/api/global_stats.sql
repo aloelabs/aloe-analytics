@@ -5,7 +5,7 @@ SELECT
         FROM
             {{ ref('pools') }}
         WHERE
-            "type" = 'aloe_blend'
+            pool_type = 'aloe_blend'
     ) AS pool_count,
     (
         SELECT

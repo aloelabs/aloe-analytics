@@ -1,2 +1,2 @@
-pool_address,type,chain_id,token0_address,token1_address
+pool_address,pool_type,chain_id,token0_address,token1_address
 0x33cB657E7fd57F1f2d5f392FB78D5FA80806d1B4,aloe_blend,1,0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48,0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
