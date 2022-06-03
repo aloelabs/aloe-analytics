@@ -1,6 +1,6 @@
 SELECT
     chain_id,
-    pool_address
+    LOWER(pool_address) AS pool_address
 FROM
     {{ ref('pools') }}
 WHERE
