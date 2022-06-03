@@ -15,7 +15,10 @@ SELECT
     ) AS tvl,
     (
         inventory0 * p0.price + inventory1 * p1.price
-    ) / total_supply AS price
+    ) / GREATEST(
+        total_supply,
+        1
+    ) AS price
 FROM
     {{ ref('pool_returns') }}
     pool_returns
