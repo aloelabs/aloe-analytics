@@ -18,10 +18,9 @@ FROM
 WHERE
     block_number > (
         SELECT
-            MAX(block_number)
+            COALESCE(MAX(block_number), 0)
         FROM
             {{ this }}
         WHERE
-            symbol = symbol
-    )
-{% endif %}
+            symbol = symbol)
+        {% endif %}

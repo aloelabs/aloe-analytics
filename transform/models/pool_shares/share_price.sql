@@ -17,10 +17,7 @@ WITH final_ AS (
         ) AS tvl,
         (
             inventory0 * p0.price + inventory1 * p1.price
-        ) / NULLIF(
-            total_supply,
-            0
-        ) AS price
+        ) / total_supply AS price
     FROM
         {{ ref('pool_returns') }}
         pool_returns

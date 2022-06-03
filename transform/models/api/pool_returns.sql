@@ -18,7 +18,13 @@ SELECT
         10,
         pools.token1_decimals
     ) AS inventory1,
-    observations.total_supply
+    NULLIF(
+        observations.total_supply,
+        0
+    ) / power(
+        10,
+        18
+    ) AS total_supply
 FROM
     {{ ref(
         'aloe_blend'
