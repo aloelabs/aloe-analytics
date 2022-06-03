@@ -21,5 +21,7 @@ WHERE
             MAX(block_number)
         FROM
             {{ this }}
+        WHERE
+            pool_address = pool_address
     )
 {% endif %}

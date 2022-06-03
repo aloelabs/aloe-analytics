@@ -1,3 +1,9 @@
+{{ config(
+    materialized = 'incremental',
+    indexes = [ { 'columns': ['block_number', 'pool_address'],
+    'unique': true }]
+) }}
+
 SELECT
     observations.block_number,
     blocks.timestamp,
@@ -21,3 +27,15 @@ FROM
     JOIN {{ ref('pools_with_tokens') }}
     pools USING (pool_address)
     JOIN {{ ref('blocks') }} USING (block_number)
+
+{% if is_incremental() %}
+WHERE
+    block_number > (
+        SELECT
+            MAX(block_number)
+        FROM
+            {{ this }}
+        WHERE
+            pool_address = pool_address
+    )
+{% endif %}

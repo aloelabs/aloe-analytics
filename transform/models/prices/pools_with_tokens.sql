@@ -3,8 +3,7 @@ SELECT
     t0.symbol AS token0_symbol,
     t0.decimals AS token0_decimals,
     t1.symbol AS token1_symbol,
-    t1.decimals AS token1_decimals,
-    pt.symbol AS pool_token_symbol
+    t1.decimals AS token1_decimals
 FROM
     {{ ref('pools') }}
     p
@@ -25,11 +24,4 @@ FROM
         p.token1_address
     ) = LOWER(
         t1.address
-    )
-    JOIN {{ ref('tokens') }}
-    pt
-    ON LOWER(
-        p.pool_address
-    ) = LOWER (
-        pt.address
     )

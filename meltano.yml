@@ -27,8 +27,9 @@ plugins:
           quote: USDT
           timeframe: 1m
           start_date: '2022-02-08T00:00:00Z'
+        #  there's an issue with FTX
       - id: ftx
-        pairs:
+        pairs: 
         - base: LOOKS
           quote: USD
           timeframe: 1m

@@ -1,3 +1,9 @@
+{{ config(
+    materialized = 'incremental',
+    indexes = [ { 'columns': ['block_number', 'pool_address'],
+    'unique': true }]
+) }}
+
 SELECT
     pool_returns.block_number,
     pool_address,
@@ -25,3 +31,15 @@ FROM
     AND pools.token1_symbol = p1.symbol
 WHERE
     pools.pool_type = 'aloe_blend'
+
+{% if is_incremental() %}
+WHERE
+    block_number > (
+        SELECT
+            MAX(block_number)
+        FROM
+            {{ this }}
+        WHERE
+            pool_address = pool_address
+    )
+{% endif %}
