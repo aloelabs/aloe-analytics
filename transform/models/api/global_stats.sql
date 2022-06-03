@@ -21,11 +21,5 @@ SELECT
         SELECT
             COALESCE(SUM(tvl), 0)
         FROM
-            {{ ref('share_price') }}
-        GROUP BY
-            block_number
-        ORDER BY
-            block_number DESC
-        LIMIT
-            1
+            {{ ref('pool_stats') }}
     ) AS tvl
