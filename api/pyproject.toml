@@ -8,6 +8,8 @@ authors = ["Matt Evenson <mevenson@usc.edu>"]
 python = "^3.9"
 uvicorn = "^0.17.6"
 fastapi = "^0.78.0"
+httpx = "^0.23.0"
+pendulum = "^2.1.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

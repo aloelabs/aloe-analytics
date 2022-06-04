@@ -12,7 +12,7 @@ SELECT
 FROM
     {{ ref('blocks') }}
     INNER JOIN {{ ref("prices") }}
-    ON "interval" @> blocks."timestamp" :: TIMESTAMP
+    ON prices."interval" @> blocks."timestamp" :: TIMESTAMP
 
 {% if is_incremental() %}
 WHERE
