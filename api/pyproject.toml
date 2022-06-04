@@ -10,6 +10,10 @@ uvicorn = "^0.17.6"
 fastapi = "^0.78.0"
 httpx = "^0.23.0"
 pendulum = "^2.1.2"
+SQLAlchemy = "^1.4.37"
+psycopg2 = "^2.9.3"
+asyncpg = "^0.25.0"
+databases = "^0.6.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

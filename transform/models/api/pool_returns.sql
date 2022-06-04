@@ -1,11 +1,13 @@
 {{ config(
     materialized = 'incremental',
     indexes = [ { 'columns': ['block_number', 'pool_address'],
-    'unique': true }]
+    'unique': true },{ 'columns': ['interval'],
+    'type': 'GIST' }]
 ) }}
 
 SELECT
     observations.block_number,
+    blocks.interval,
     blocks.timestamp,
     pools.pool_address,
     pools.pool_type,

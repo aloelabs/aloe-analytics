@@ -26,3 +26,4 @@ models:
   my_meltano_project:
     api:
       +schema: api
+

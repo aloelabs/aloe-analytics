@@ -16,10 +16,22 @@ WITH blocks_with_timestamps AS (
 )
 SELECT
     b0.*,
-    tsrange(
-        b0.timestamp :: TIMESTAMP,
-        b1.timestamp :: TIMESTAMP
-    ) AS block_interval
+    int8range(
+        CAST(
+            EXTRACT(
+                'epoch'
+                FROM
+                    b0.timestamp :: TIMESTAMP
+            ) AS INT
+        ),
+        CAST(
+            EXTRACT(
+                'epoch'
+                FROM
+                    b1.timestamp :: TIMESTAMP
+            ) AS INT
+        )
+    ) AS "interval"
 FROM
     blocks_with_timestamps b0
     LEFT JOIN blocks_with_timestamps b1
@@ -27,7 +39,7 @@ FROM
 
 {% if is_incremental() %}
 WHERE
-    block_number > (
+    b0.block_number > (
         SELECT
             MAX(block_number)
         FROM
