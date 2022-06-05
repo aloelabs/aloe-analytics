@@ -16,10 +16,9 @@ SELECT
             {{ ref('current_balances') }}
         WHERE
             balance > 0
-    ) AS users,
-    (
-        SELECT
-            COALESCE(SUM(tvl), 0)
-        FROM
-            {{ ref('pool_stats') }}
-    ) AS tvl
+    ) AS users -- (
+    --     SELECT
+    --         COALESCE(SUM(tvl), 0)
+    --     FROM
+    --         {{ ref('pool_stats') }}
+    -- ) AS tvl

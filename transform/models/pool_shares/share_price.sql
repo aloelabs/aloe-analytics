@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'incremental',
-    indexes = [ { 'columns': ['block_number', 'pool_address'],
+    indexes = [ { 'columns': ['block_number', 'pool_address', 'chain_id'],
     'unique': true }]
 ) }}
 
@@ -10,6 +10,9 @@ WITH final_ AS (
         pool_returns.block_number,
         pool_address,
         total_supply,
+        inventory0,
+        inventory1,
+        pools.chain_id,
         p0.price AS token0_price,
         p1.price AS token1_price,
         (

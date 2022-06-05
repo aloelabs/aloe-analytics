@@ -1,7 +1,6 @@
 {{ config(
     materialized = 'incremental',
-    indexes = [ { 'columns': ['block_number', 'pool_address'],
-    'unique': true },{ 'columns': ['block_interval'],
+    indexes = [ { 'columns': ['pool_address', 'chain_id'] },{ 'columns': ['block_number'] },{ 'columns': ['block_interval'],
     'type': 'GIST' }]
 ) }}
 
