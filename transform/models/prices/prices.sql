@@ -6,6 +6,8 @@
 
 SELECT
     ohlcv.timestamp,
+    tokens.address AS token_address,
+    tokens.chain_id,
     (
         tsrange(
             ohlcv.timestamp,
@@ -20,6 +22,8 @@ SELECT
     ) / 2 AS price
 FROM
     tap_ccxt.ohlcv
+    JOIN {{ ref('tokens') }}
+    ON base = symbol
 
 {% if is_incremental() %}
 WHERE

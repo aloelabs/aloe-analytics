@@ -87,22 +87,37 @@ def _generate_series(range: str, end_time: str) -> List[str]:
 @app.get("/pool_returns/{pool_address}/{chain_id}/{range}/{end_time}")
 async def get_pool_returns(pool_address: str, chain_id: int, range: str, end_time: str):
     timestamps = _generate_series(range, end_time)
-    subquery = f'SELECT * FROM (VALUES {",".join(list(map(lambda t: f"({t} :: int8)", timestamps))) }) AS timestamps ("timestamp")'
-
-    query = f"SELECT timestamps.timestamp, block_number, block_timestamp, pool_address, chain_id, inventory0, inventory1, total_supply FROM dbt_api.pool_returns JOIN ({ subquery }) AS timestamps ON block_interval @> timestamps.timestamp :: int8 WHERE pool_address = :pool_address AND chain_id = :chain_id  ORDER BY block_number ASC"
-
+    values_list = list(map(lambda t: f"({t} :: int8)", timestamps))
+    subquery = (
+        f'SELECT * FROM (VALUES {",".join(values_list) }) AS timestamps ("timestamp")'
+    )
+    query = (
+        "SELECT timestamps.timestamp, block_number, block_timestamp, pool_address, chain_id, inventory0, inventory1, total_supply "
+        "FROM dbt_api.pool_returns "
+        f"JOIN ({ subquery }) AS timestamps ON block_interval @> timestamps.timestamp "
+        "WHERE pool_address = :pool_address AND chain_id = :chain_id "
+        "ORDER BY block_number ASC"
+    )
     values = {"pool_address": pool_address, "chain_id": chain_id}
     return await db.fetch_all(query=query, values=values)
 
 
-# @app.get("/token_returns/{token_address}/{chain_id}/{range}/{end_time}")
-# async def get_token_returns(
-#     token_address: str, chain_id: int, range: str, end_time: str
-# ):
-#     timestamps = _generate_series(range, end_time)
-#     subquery = " OR ".join(
-#         [f"interval @> {timestamp} :: int8" for timestamp in timestamps]
-#     )
-#     records = await db.fetch_all(
-#         f"SELECT timestamp, token_address, chain_id, inventory0, inventory1, total_supply FROM dbt_api.pool_returns WHERE pool_address = '{token_address}' AND chain_id = {chain_id} AND ({subquery}) ORDER BY block_number ASC"
-#     )
+@cache()
+@app.get("/token_returns/{token_address}/{chain_id}/{range}/{end_time}")
+async def get_token_returns(
+    token_address: str, chain_id: int, range: str, end_time: str
+):
+    timestamps = _generate_series(range, end_time)
+    values_list = list(map(lambda t: f"({t} :: int8)", timestamps))
+    subquery = (
+        f'SELECT * FROM (VALUES {",".join(values_list) }) AS timestamps ("timestamp")'
+    )
+    query = (
+        "SELECT timestamps.timestamp, price FROM "
+        "dbt.prices "
+        f"JOIN ({subquery}) AS timestamps ON prices.interval @> to_timestamp(timestamps.timestamp) :: TIMESTAMP "
+        "WHERE token_address = :token_address AND chain_id = :chain_id "
+        "ORDER BY timestamps.timestamp ASC"
+    )
+    values = {"token_address": token_address, "chain_id": chain_id}
+    return await db.fetch_all(query=query, values=values)
