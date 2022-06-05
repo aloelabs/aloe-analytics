@@ -14,6 +14,7 @@ SQLAlchemy = "^1.4.37"
 psycopg2 = "^2.9.3"
 asyncpg = "^0.25.0"
 databases = "^0.6.0"
+fastapi-cache2 = "^0.1.8"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

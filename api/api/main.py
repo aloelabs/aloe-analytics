@@ -1,3 +1,4 @@
+from functools import cache
 from itertools import chain, starmap
 import json
 from typing import List
@@ -11,6 +12,10 @@ from sqlalchemy import create_engine
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine
 
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.inmemory import InMemoryBackend
+from fastapi_cache.decorator import cache
+
 app = FastAPI()
 
 # https://github.com/tiangolo/fastapi/issues/1788
@@ -22,6 +27,7 @@ db = databases.Database(
 
 @app.on_event("startup")
 async def startup():
+    FastAPICache.init(InMemoryBackend(), prefix="fastapi-cache", expire=60)
     await db.connect()
 
 
@@ -35,20 +41,23 @@ async def root():
     return {"message": "Hello World"}
 
 
+@cache()
 @app.get("/deployed_pools/{chain_id}")
-async def get_deployed_pools_by_chain(chain_id: int):
+async def get_deployed_pools(chain_id: int):
     query = "SELECT * FROM dbt_api.deployed_pools WHERE chain_id = :chain_id"
     values = {"chain_id": chain_id}
     return await db.fetch_all(query=query, values=values)
 
 
+@cache()
 @app.get("/pool_stats/{pool_address}/{chain_id}")
-async def get_deployed_pools_by_chain(pool_address: str, chain_id: int):
+async def get_pool_stats(pool_address: str, chain_id: int):
     query = "SELECT * FROM dbt_api.pool_stats WHERE pool_address = :pool_address AND chain_id = :chain_id"
     values = {"pool_address": pool_address, "chain_id": chain_id}
     return await db.fetch_all(query=query, values=values)
 
 
+@cache()
 @app.get("/global_stats")
 async def get_global_stats():
     return await db.fetch_all(f"SELECT * FROM dbt_api.global_stats")
@@ -74,6 +83,7 @@ def _generate_series(range: str, end_time: str) -> List[str]:
     return series
 
 
+@cache()
 @app.get("/pool_returns/{pool_address}/{chain_id}/{range}/{end_time}")
 async def get_pool_returns(pool_address: str, chain_id: int, range: str, end_time: str):
     timestamps = _generate_series(range, end_time)
