@@ -6,7 +6,7 @@
 SELECT
     "timestamp",
     block_number,
-    LOWER(inputs__amount) AS amount,
+    CAST(LOWER(inputs__amount) AS numeric) AS amount,
     LOWER(inputs__from) AS from_address,
     LOWER(inputs__to) AS to_address,
     LOWER("address") AS pool_address

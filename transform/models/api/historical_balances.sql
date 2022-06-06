@@ -1,20 +1,45 @@
+WITH balance_changes AS (
+    SELECT
+        pool_address,
+        to_address AS user_address,
+        amount,
+        "timestamp",
+        block_number
+    FROM
+        {{ ref('transfers') }}
+    WHERE
+        to_address != '0x0000000000000000000000000000000000000000'
+    UNION ALL
+    SELECT
+        pool_address,
+        from_address AS user_address,- amount AS amount,
+        "timestamp",
+        block_number
+    FROM
+        {{ ref('transfers') }}
+    WHERE
+        from_address != '0x0000000000000000000000000000000000000000'
+)
 SELECT
-    blocks_per_user_and_pool.*,
-    SUM(COALESCE(deposits.amount, 0) - COALESCE(withdrawals.amount, 0)) over (
+    user_address,
+    pool_address,
+    SUM(amount) over (
         PARTITION BY user_address,
         pool_address
         ORDER BY
             block_number
-    ) AS balance
+    ) / power(
+        10,
+        18
+    ) AS balance,
+    tsrange(
+        "timestamp" :: TIMESTAMP,
+        LEAD("timestamp") over (
+            PARTITION BY user_address,
+            pool_address
+            ORDER BY
+                "timestamp"
+        ) :: TIMESTAMP
+    ) AS "interval"
 FROM
-    {{ ref('blocks_per_user_and_pool') }}
-    LEFT JOIN {{ ref('deposits') }} USING (
-        block_number,
-        user_address,
-        pool_address
-    )
-    LEFT JOIN {{ ref('withdrawals') }} USING (
-        block_number,
-        user_address,
-        pool_address
-    )
+    balance_changes
