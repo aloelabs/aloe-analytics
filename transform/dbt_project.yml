@@ -23,7 +23,5 @@ clean-targets:
 - dbt_packages
 - logs
 models:
-  my_meltano_project:
-    api:
-      +schema: api
+  my_meltano_project: null
 

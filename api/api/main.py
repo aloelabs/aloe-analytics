@@ -12,6 +12,7 @@ import pendulum
 import databases
 from fastapi.encoders import jsonable_encoder
 from pendulum import duration, time
+from pydantic import BaseSettings
 from sqlalchemy import create_engine
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine
@@ -22,13 +23,14 @@ from fastapi_cache.decorator import cache
 
 app = FastAPI()
 
-# https://github.com/tiangolo/fastapi/issues/1788
 
-db = databases.Database(
-    "postgresql://mattevenson:password@localhost:5432/aloe_analytics"
-)
+class Settings(BaseSettings):
+    database_url: str
 
-logging.getLogger("databases").setLevel(logging.DEBUG)
+
+settings = Settings()
+
+db = databases.Database(settings.database_url)
 
 
 @app.on_event("startup")
@@ -50,24 +52,23 @@ async def root():
 @app.get("/deployed_pools/{chain_id}")
 @cache()
 async def get_deployed_pools(chain_id: int):
-    query = "SELECT * FROM dbt_api.deployed_pools WHERE chain_id = :chain_id"
+    query = "SELECT * FROM dbt.deployed_pools WHERE chain_id = :chain_id"
     values = {"chain_id": chain_id}
     return await db.fetch_all(query=query, values=values)
 
 
 @app.get("/pool_stats/{pool_address}/{chain_id}")
-# @cache()
+@cache()
 async def get_pool_stats(pool_address: str, chain_id: int):
-    query = "SELECT * FROM dbt_api.pool_stats WHERE pool_address = :pool_address AND chain_id = :chain_id"
+    query = "SELECT * FROM dbt.pool_stats WHERE pool_address = :pool_address AND chain_id = :chain_id"
     values = {"pool_address": pool_address, "chain_id": chain_id}
     return await db.fetch_all(query=query, values=values)
 
 
-#  "SELECT * FROM dbt_api.pool_stats WHERE pool_address = '0x33cb657e7fd57f1f2d5f392fb78d5fa80806d1b4' AND chain_id = 1
 @app.get("/global_stats")
 @cache()
 async def get_global_stats():
-    return await db.fetch_all(f"SELECT * FROM dbt_api.global_stats")
+    return await db.fetch_all(f"SELECT * FROM dbt.global_stats")
 
 
 ranges = {
@@ -105,7 +106,7 @@ async def get_pool_returns(pool_address: str, chain_id: int, range: str, end_tim
     subquery = _generate_subquery_for_range(range, end_time)
     query = (
         "SELECT timestamps.timestamp, block_number, block_timestamp, pool_address, chain_id, inventory0, inventory1, total_supply "
-        "FROM dbt_api.pool_returns "
+        "FROM dbt.pool_returns "
         f"JOIN ({ subquery }) AS timestamps ON block_interval @> to_timestamp(timestamps.timestamp) :: TIMESTAMP "
         "WHERE pool_address = :pool_address AND chain_id = :chain_id "
         "ORDER BY block_number ASC"
@@ -148,7 +149,7 @@ async def get_share_balances(
     subquery = _generate_subquery_for_range(range, end_time)
     query = (
         "SELECT timestamps.timestamp, pool_address, balance FROM "
-        "dbt_api.historical_balances "
+        "dbt.historical_balances "
         f"JOIN ({subquery}) AS timestamps ON historical_balances.interval @> to_timestamp(timestamps.timestamp) :: TIMESTAMP "
         "WHERE user_address = :user_address "
         "ORDER BY timestamps.timestamp ASC"
