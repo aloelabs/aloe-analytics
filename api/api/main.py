@@ -2,8 +2,10 @@ from collections import defaultdict
 from functools import cache
 from itertools import chain, starmap
 import json
+import logging
 from typing import Any, Dict, List
 from venv import create
+from click import echo
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse, StreamingResponse
 import pendulum
@@ -25,6 +27,8 @@ app = FastAPI()
 db = databases.Database(
     "postgresql://mattevenson:password@localhost:5432/aloe_analytics"
 )
+
+logging.getLogger("databases").setLevel(logging.DEBUG)
 
 
 @app.on_event("startup")
@@ -52,13 +56,14 @@ async def get_deployed_pools(chain_id: int):
 
 
 @app.get("/pool_stats/{pool_address}/{chain_id}")
-@cache()
+# @cache()
 async def get_pool_stats(pool_address: str, chain_id: int):
     query = "SELECT * FROM dbt_api.pool_stats WHERE pool_address = :pool_address AND chain_id = :chain_id"
     values = {"pool_address": pool_address, "chain_id": chain_id}
     return await db.fetch_all(query=query, values=values)
 
 
+#  "SELECT * FROM dbt_api.pool_stats WHERE pool_address = '0x33cb657e7fd57f1f2d5f392fb78d5fa80806d1b4' AND chain_id = 1
 @app.get("/global_stats")
 @cache()
 async def get_global_stats():

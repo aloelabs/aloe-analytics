@@ -1,35 +1,25 @@
 -- TODO: need calculation for APR and perfInception
-WITH first_ AS (
+WITH cte AS (
     SELECT
-        DISTINCT
-        ON (
-            pool_address,
-            chain_id
-        ) *
+        *,
+        ROW_NUMBER() over (
+            PARTITION BY pool_address
+            ORDER BY
+                block_number ASC
+        ) AS rn0,
+        ROW_NUMBER() over (
+            PARTITION BY pool_address
+            ORDER BY
+                block_number DESC
+        ) AS rn1
     FROM
         {{ ref('share_price') }}
-    ORDER BY
-        pool_address,
-        chain_id,
-        block_number ASC
-),
-last AS (
-    SELECT
-        DISTINCT
-        ON (
-            pool_address,
-            chain_id
-        ) *
-    FROM
-        {{ ref('share_price') }}
-    ORDER BY
-        pool_address,
-        chain_id,
-        block_number DESC
 )
 SELECT
-    LOWER(pool_address) AS pool_address,
-    chain_id,
+    LOWER(
+        pools.pool_address
+    ) AS pool_address,
+    pools.chain_id,
     (
         SELECT
             tvl
@@ -56,13 +46,11 @@ SELECT
     1 AS annual_percentage_rate
 FROM
     {{ ref('pools') }}
-    JOIN first_ USING (
-        pool_address,
-        chain_id
-    )
-    JOIN last USING (
-        pool_address,
-        chain_id
-    )
+    JOIN cte AS first_
+    ON first_.pool_address = pools.pool_address
+    AND first_.rn0 = 1
+    JOIN cte AS last
+    ON last.pool_address = pools.pool_address
+    AND last.rn1 = 1
 WHERE
     pool_type = 'aloe_blend'
