@@ -43,24 +43,24 @@ async def root():
     return {"message": "Hello World"}
 
 
-@cache()
 @app.get("/deployed_pools/{chain_id}")
+@cache()
 async def get_deployed_pools(chain_id: int):
     query = "SELECT * FROM dbt_api.deployed_pools WHERE chain_id = :chain_id"
     values = {"chain_id": chain_id}
     return await db.fetch_all(query=query, values=values)
 
 
-@cache()
 @app.get("/pool_stats/{pool_address}/{chain_id}")
+@cache()
 async def get_pool_stats(pool_address: str, chain_id: int):
     query = "SELECT * FROM dbt_api.pool_stats WHERE pool_address = :pool_address AND chain_id = :chain_id"
     values = {"pool_address": pool_address, "chain_id": chain_id}
     return await db.fetch_all(query=query, values=values)
 
 
-@cache()
 @app.get("/global_stats")
+@cache()
 async def get_global_stats():
     return await db.fetch_all(f"SELECT * FROM dbt_api.global_stats")
 
@@ -94,8 +94,8 @@ def _generate_subquery_for_range(range: str, end_time: str) -> str:
     return subquery
 
 
-@cache()
 @app.get("/pool_returns/{pool_address}/{chain_id}/{range}/{end_time}")
+@cache()
 async def get_pool_returns(pool_address: str, chain_id: int, range: str, end_time: str):
     subquery = _generate_subquery_for_range(range, end_time)
     query = (
@@ -135,8 +135,8 @@ def _partition_by_key(list_of_dicts: List[Dict], key: str) -> Dict[Any, List[Dic
     return result
 
 
-@cache()
 @app.get("/share_balances/{user_address}/{chain_id}/{range}/{end_time}")
+@cache()
 async def get_share_balances(
     user_address: str, chain_id: int, range: str, end_time: str
 ):
@@ -153,8 +153,8 @@ async def get_share_balances(
     return _partition_by_key(rows, "pool_address")
 
 
-@cache()
 @app.get("/net_deposits/{user_address}/{chain_id}/{range}/{end_time}")
+@cache()
 async def get_net_deposits(user_address: str, chain_id: int, range: str, end_time: str):
     subquery = _generate_subquery_for_range(range, end_time)
     query = (
