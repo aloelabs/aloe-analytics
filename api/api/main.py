@@ -2,7 +2,7 @@ from collections import defaultdict
 from functools import cache
 from itertools import chain, starmap
 import json
-from typing import List
+from typing import Any, Dict, List
 from venv import create
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse, StreamingResponse
@@ -85,14 +85,19 @@ def _generate_series(range: str, end_time: str) -> List[str]:
     return series
 
 
-@cache()
-@app.get("/pool_returns/{pool_address}/{chain_id}/{range}/{end_time}")
-async def get_pool_returns(pool_address: str, chain_id: int, range: str, end_time: str):
+def _generate_subquery_for_range(range: str, end_time: str) -> str:
     timestamps = _generate_series(range, end_time)
     values_list = list(map(lambda t: f"({t} :: int8)", timestamps))
     subquery = (
         f'SELECT * FROM (VALUES {",".join(values_list) }) AS timestamps ("timestamp")'
     )
+    return subquery
+
+
+@cache()
+@app.get("/pool_returns/{pool_address}/{chain_id}/{range}/{end_time}")
+async def get_pool_returns(pool_address: str, chain_id: int, range: str, end_time: str):
+    subquery = _generate_subquery_for_range(range, end_time)
     query = (
         "SELECT timestamps.timestamp, block_number, block_timestamp, pool_address, chain_id, inventory0, inventory1, total_supply "
         "FROM dbt_api.pool_returns "
@@ -109,11 +114,7 @@ async def get_pool_returns(pool_address: str, chain_id: int, range: str, end_tim
 async def get_token_returns(
     token_address: str, chain_id: int, range: str, end_time: str
 ):
-    timestamps = _generate_series(range, end_time)
-    values_list = list(map(lambda t: f"({t} :: int8)", timestamps))
-    subquery = (
-        f'SELECT * FROM (VALUES {",".join(values_list) }) AS timestamps ("timestamp")'
-    )
+    subquery = _generate_subquery_for_range(range, end_time)
     query = (
         "SELECT timestamps.timestamp, price FROM "
         "dbt.prices "
@@ -125,16 +126,21 @@ async def get_token_returns(
     return await db.fetch_all(query=query, values=values)
 
 
+def _partition_by_key(list_of_dicts: List[Dict], key: str) -> Dict[Any, List[Dict]]:
+    result = defaultdict(list)
+    for dict_ in list_of_dicts:
+        k = dict_[key]
+        del dict_[key]
+        result[k].append(dict_)
+    return result
+
+
 @cache()
 @app.get("/share_balances/{user_address}/{chain_id}/{range}/{end_time}")
 async def get_share_balances(
     user_address: str, chain_id: int, range: str, end_time: str
 ):
-    timestamps = _generate_series(range, end_time)
-    values_list = list(map(lambda t: f"({t} :: int8)", timestamps))
-    subquery = (
-        f'SELECT * FROM (VALUES {",".join(values_list) }) AS timestamps ("timestamp")'
-    )
+    subquery = _generate_subquery_for_range(range, end_time)
     query = (
         "SELECT timestamps.timestamp, pool_address, balance FROM "
         "dbt_api.historical_balances "
@@ -144,7 +150,20 @@ async def get_share_balances(
     )
     values = {"user_address": user_address}
     rows = jsonable_encoder(await db.fetch_all(query=query, values=values))
-    balances_by_pool_address = defaultdict(list)
-    for row in rows:
-        balances_by_pool_address[row["pool_address"]].append(row)
-    return balances_by_pool_address
+    return _partition_by_key(rows, "pool_address")
+
+
+@cache()
+@app.get("/net_deposits/{user_address}/{chain_id}/{range}/{end_time}")
+async def get_net_deposits(user_address: str, chain_id: int, range: str, end_time: str):
+    subquery = _generate_subquery_for_range(range, end_time)
+    query = (
+        "SELECT timestamps.timestamp, pool_address, net_deposit FROM "
+        "dbt.net_deposits "
+        f"JOIN ({subquery}) AS timestamps ON net_deposits.interval @> to_timestamp(timestamps.timestamp) :: TIMESTAMP "
+        "WHERE user_address = :user_address "
+        "ORDER BY timestamps.timestamp ASC"
+    )
+    values = {"user_address": user_address}
+    rows = jsonable_encoder(await db.fetch_all(query=query, values=values))
+    return _partition_by_key(rows, "pool_address")
