@@ -1,8 +1,6 @@
 # syntax=docker/dockerfile:experimental
 
-# registry.gitlab.com/meltano/meltano:latest is also available in GitLab Registry
-ARG MELTANO_IMAGE=meltano/meltano:latest
-FROM $MELTANO_IMAGE
+FROM meltano/meltano:latest
 
 WORKDIR /project
 
