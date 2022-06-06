@@ -119,6 +119,132 @@
 				"description": ""
 			},
 			"response": []
+		},
+		{
+			"name": "Token Returns",
+			"request": {
+				"url": {
+					"raw": "{{base_url}}/token_returns/:token_address/:chain_id/:range/:end_time",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"token_returns",
+						":token_address",
+						":chain_id",
+						":range",
+						":end_time"
+					],
+					"query": [],
+					"variable": [
+						{
+							"key": "token_address",
+							"value": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+						},
+						{
+							"key": "chain_id",
+							"value": "1"
+						},
+						{
+							"key": "range",
+							"value": "1y"
+						},
+						{
+							"key": "end_time",
+							"value": "1651632134"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Share Balances",
+			"request": {
+				"url": {
+					"raw": "{{base_url}}/share_balances/:user_address/:chain_id/:range/:end_time",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"share_balances",
+						":user_address",
+						":chain_id",
+						":range",
+						":end_time"
+					],
+					"query": [],
+					"variable": [
+						{
+							"key": "user_address",
+							"value": "0xcf2b7c6bc98bfe0d6138a25a3b6162b51f75e05d"
+						},
+						{
+							"key": "chain_id",
+							"value": "1"
+						},
+						{
+							"key": "range",
+							"value": "1y"
+						},
+						{
+							"key": "end_time",
+							"value": "1651632134"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Net Deposits",
+			"request": {
+				"url": {
+					"raw": "{{base_url}}/net_deposits/:user_address/:chain_id/:range/:end_time",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"net_deposits",
+						":user_address",
+						":chain_id",
+						":range",
+						":end_time"
+					],
+					"query": [],
+					"variable": [
+						{
+							"key": "user_address",
+							"value": "0x74d92d4bd54123271c841e363915f7d8758e59e7"
+						},
+						{
+							"key": "chain_id",
+							"value": "1"
+						},
+						{
+							"key": "range",
+							"value": "1d"
+						},
+						{
+							"key": "end_time",
+							"value": "1651632134"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
 		}
 	]
 }
