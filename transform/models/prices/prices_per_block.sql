@@ -5,7 +5,11 @@
 ) }}
 
 SELECT
-    block_number,
+    DISTINCT
+    ON (
+        block_number,
+        base
+    ) block_number,
     base AS "symbol",
     price,
     blocks."timestamp"
@@ -24,3 +28,11 @@ WHERE
         WHERE
             symbol = symbol)
         {% endif %}
+        ORDER BY
+            block_number,
+            base,
+            UPPER(
+                prices."interval"
+            ) - LOWER(
+                prices."interval"
+            ) ASC

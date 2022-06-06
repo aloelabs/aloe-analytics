@@ -1,3 +1,4 @@
+from collections import defaultdict
 from functools import cache
 from itertools import chain, starmap
 import json
@@ -7,6 +8,7 @@ from fastapi import FastAPI
 from fastapi.responses import RedirectResponse, StreamingResponse
 import pendulum
 import databases
+from fastapi.encoders import jsonable_encoder
 from pendulum import duration, time
 from sqlalchemy import create_engine
 from sqlalchemy import text
@@ -123,6 +125,7 @@ async def get_token_returns(
     return await db.fetch_all(query=query, values=values)
 
 
+@cache()
 @app.get("/share_balances/{user_address}/{chain_id}/{range}/{end_time}")
 async def get_share_balances(
     user_address: str, chain_id: int, range: str, end_time: str
@@ -136,8 +139,12 @@ async def get_share_balances(
         "SELECT timestamps.timestamp, pool_address, balance FROM "
         "dbt_api.historical_balances "
         f"JOIN ({subquery}) AS timestamps ON historical_balances.interval @> to_timestamp(timestamps.timestamp) :: TIMESTAMP "
-        "WHERE user_address = :user_address AND chain_id = :chain_id "
+        "WHERE user_address = :user_address "
         "ORDER BY timestamps.timestamp ASC"
     )
-    values = {"user_address": user_address, "chain_id": chain_id}
-    return await db.fetch_all(query=query, values=values)
+    values = {"user_address": user_address}
+    rows = jsonable_encoder(await db.fetch_all(query=query, values=values))
+    balances_by_pool_address = defaultdict(list)
+    for row in rows:
+        balances_by_pool_address[row["pool_address"]].append(row)
+    return balances_by_pool_address

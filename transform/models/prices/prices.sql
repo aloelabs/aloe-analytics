@@ -11,7 +11,7 @@ SELECT
     (
         tsrange(
             ohlcv.timestamp,
-            ohlcv.timestamp + INTERVAL '1 minute'
+            ohlcv.timestamp + ohlcv.timeframe :: INTERVAL
         )
     ) AS "interval",
     ohlcv.exchange,

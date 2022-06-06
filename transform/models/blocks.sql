@@ -15,19 +15,20 @@ WITH blocks_with_timestamps AS (
         tap_thegraph.mainnet_block
 )
 SELECT
-    b0.*,
+    *,
     tsrange(
-        b0.timestamp :: TIMESTAMP,
-        b1.timestamp :: TIMESTAMP
+        "timestamp" :: TIMESTAMP,
+        LEAD(TIMESTAMP) over (
+            ORDER BY
+                block_number ASC
+        ) :: TIMESTAMP
     ) AS "interval"
 FROM
-    blocks_with_timestamps b0
-    LEFT JOIN blocks_with_timestamps b1
-    ON b0.block_number = b1.block_number - 1
+    blocks_with_timestamps
 
 {% if is_incremental() %}
 WHERE
-    b0.block_number > (
+    block_number > (
         SELECT
             MAX(block_number)
         FROM
