@@ -16,21 +16,9 @@ WITH blocks_with_timestamps AS (
 )
 SELECT
     b0.*,
-    int8range(
-        CAST(
-            EXTRACT(
-                'epoch'
-                FROM
-                    b0.timestamp :: TIMESTAMP
-            ) AS INT
-        ),
-        CAST(
-            EXTRACT(
-                'epoch'
-                FROM
-                    b1.timestamp :: TIMESTAMP
-            ) AS INT
-        )
+    tsrange(
+        b0.timestamp :: TIMESTAMP,
+        b1.timestamp :: TIMESTAMP
     ) AS "interval"
 FROM
     blocks_with_timestamps b0

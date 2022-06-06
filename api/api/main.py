@@ -94,7 +94,7 @@ async def get_pool_returns(pool_address: str, chain_id: int, range: str, end_tim
     query = (
         "SELECT timestamps.timestamp, block_number, block_timestamp, pool_address, chain_id, inventory0, inventory1, total_supply "
         "FROM dbt_api.pool_returns "
-        f"JOIN ({ subquery }) AS timestamps ON block_interval @> timestamps.timestamp "
+        f"JOIN ({ subquery }) AS timestamps ON block_interval @> to_timestamp(timestamps.timestamp) :: TIMESTAMP "
         "WHERE pool_address = :pool_address AND chain_id = :chain_id "
         "ORDER BY block_number ASC"
     )
@@ -120,4 +120,24 @@ async def get_token_returns(
         "ORDER BY timestamps.timestamp ASC"
     )
     values = {"token_address": token_address, "chain_id": chain_id}
+    return await db.fetch_all(query=query, values=values)
+
+
+@app.get("/share_balances/{user_address}/{chain_id}/{range}/{end_time}")
+async def get_share_balances(
+    user_address: str, chain_id: int, range: str, end_time: str
+):
+    timestamps = _generate_series(range, end_time)
+    values_list = list(map(lambda t: f"({t} :: int8)", timestamps))
+    subquery = (
+        f'SELECT * FROM (VALUES {",".join(values_list) }) AS timestamps ("timestamp")'
+    )
+    query = (
+        "SELECT timestamps.timestamp, pool_address, balance FROM "
+        "dbt_api.historical_balances "
+        f"JOIN ({subquery}) AS timestamps ON historical_balances.interval @> to_timestamp(timestamps.timestamp) :: TIMESTAMP "
+        "WHERE user_address = :user_address AND chain_id = :chain_id "
+        "ORDER BY timestamps.timestamp ASC"
+    )
+    values = {"user_address": user_address, "chain_id": chain_id}
     return await db.fetch_all(query=query, values=values)

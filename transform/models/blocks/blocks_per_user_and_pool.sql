@@ -1,24 +1,42 @@
-WITH user_addresses AS (
+{{ config(
+    materialized = 'incremental',
+    indexes = [ { 'columns': ['pool_address', 'user_address', 'block_number'] },]
+) }}
+
+WITH initial_deposits AS (
+
     SELECT
-        DISTINCT user_address
+        DISTINCT
+        ON (
+            pool_address,
+            user_address
+        ) pool_address,
+        user_address,
+        block_number
     FROM
         {{ ref('deposits') }}
-),
-pool_addresses AS (
-    SELECT
-        chain_id,
-        LOWER(pool_address) AS pool_address
-    FROM
-        {{ ref('pools') }}
-    WHERE
-        pool_type = 'aloe_blend'
+    ORDER BY
+        pool_address,
+        user_address,
+        block_number ASC
 )
 SELECT
     blocks.*,
-    chain_id,
     user_address,
     pool_address
 FROM
-    {{ ref('blocks') }},
-    user_addresses,
-    pool_addresses
+    initial_deposits
+    JOIN {{ ref('blocks') }}
+    ON blocks.block_number >= initial_deposits.block_number
+
+{% if is_incremental() %}
+WHERE
+    block_number > (
+        SELECT
+            MAX(block_number)
+        FROM
+            {{ this }}
+        WHERE
+            pool_address = pool_address
+    )
+{% endif %}
