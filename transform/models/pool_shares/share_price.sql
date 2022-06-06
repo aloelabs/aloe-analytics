@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'incremental',
-    indexes = [ { 'columns': ['block_number desc', 'pool_address'] },{ 'columns': ['block_number', 'pool_address'],
+    indexes = [ { 'columns': ['pool_address', 'chain_id', 'block_number desc'] },{ 'columns': ['pool_address', 'chain_id', 'block_number', ],
     'unique': true }]
 ) }}
 
