@@ -2,6 +2,11 @@
 
 FROM meltano/meltano:latest
 
+ARG NPM_USER
+ARG NPM_PASS
+ARG NPM_EMAIL
+ARG NPM_SCOPE
+
 WORKDIR /project
 
 RUN apt-get update -y && apt-get install -y openssh-client git cron curl
@@ -21,9 +26,9 @@ RUN pip install -r requirements.txt
 COPY ./meltano.yml .
 RUN --mount=type=ssh meltano install
 
-RUN npm i -g graphql-api-to-json-schema
-
-RUN --mount=type=ssh npm i -g git+ssh://git@github.com/superkeyio/block-gobbler.git
+RUN npm i -g graphql-api-to-json-schema npm-cli-login
+RUN NPM_USER=${NPM_USER} NPM_PASS=${NPM_PASS} NPM_EMAIL=${NPM_EMAIL} NPM_SCOPE=${NPM_SCOPE} NPM_REGISTRY=https://npm.pkg.github.com npm-cli-login
+RUN npm i -g @superkeyio/block-gobbler
 
 # Pin `discovery.yml` manifest by copying cached version to project root
 RUN cp -n .meltano/cache/discovery.yml . 2>/dev/null || :
