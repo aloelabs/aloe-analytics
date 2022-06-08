@@ -1,9 +1,11 @@
 #!/bin/bash
 
+timestamp=$(date +%Y%m%d%H%M%S)
+
 docker compose build
 
-docker tag pipeline ${GCR_PATH}/pipeline:${TAG}
-docker tag api ${GCR_PATH}/api:${TAG}
+docker tag pipeline ${GCR_PATH}/pipeline:${timestamp}
+docker tag api ${GCR_PATH}/api:${timestamp}
 
-docker push ${GCR_PATH}/pipeline
-docker push ${GCR_PATH}/api
+docker push ${GCR_PATH}/pipeline:${timestamp}
+docker push ${GCR_PATH}/api:${timestamp}
