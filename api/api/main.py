@@ -105,7 +105,7 @@ def _generate_subquery_for_range(range: str, end_time: str) -> str:
 async def get_pool_returns(pool_address: str, chain_id: int, range: str, end_time: str):
     subquery = _generate_subquery_for_range(range, end_time)
     query = (
-        "SELECT timestamps.timestamp, block_number, block_timestamp, pool_address, chain_id, inventory0, inventory1, total_supply "
+        "SELECT timestamps.timestamp, block_number, timestamp, pool_address, chain_id, inventory0, inventory1, total_supply "
         "FROM dbt.pool_returns "
         f"JOIN ({ subquery }) AS timestamps ON \"interval\" @> to_timestamp(timestamps.timestamp) :: TIMESTAMP "
         "WHERE pool_address = :pool_address AND chain_id = :chain_id "

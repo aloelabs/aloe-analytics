@@ -1,1 +1,1 @@
-* * * * * cd /project && /project/scripts/run_pipeline.sh >> /var/log/cron.log 2>&1
+* * * * * /project/scripts/run_pipeline.sh >> /var/log/cron.log 2>&1
