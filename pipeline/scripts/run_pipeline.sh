@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 cd /project
 
 # Load environment variables
