@@ -1,8 +1,8 @@
 version: '3'
 services:
   api:
-    image: "api:${TAG}"
-    build: 
+    image: api
+    build:
       context: ./api
       dockerfile: Dockerfile
     ports:
@@ -10,8 +10,8 @@ services:
     env_file:
       - ./api/.env
   pipeline:
-    image: "pipeline:${TAG}"
-    build: 
+    image: pipeline
+    build:
       context: ./pipeline
       dockerfile: Dockerfile
       args:
@@ -19,9 +19,7 @@ services:
         - NPM_USER=$NPM_USER
         - NPM_SCOPE=$NPM_SCOPE
         - NPM_EMAIL=$NPM_EMAIL
-      ssh: 
+      ssh:
         - default
     env_file:
       - ./pipeline/.env
-    
-

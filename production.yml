@@ -1,12 +1,12 @@
 version: '3'
 services:
   api:
-    image: gcr.io/analytics-mvp-345921/api:latest
+    image: "${GCR_PATH}/api:latest"
     env_file:
-      - ./api/.prod.env
+      - ./api/.env.prod
   pipeline:
-    image: gcr.io/analytics-mvp-345921/pipeline:latest
+    image: "${GCR_PATH}/pipeline:latest"
     env_file:
-      - ./pipeline/.prod.env
+      - ./pipeline/.env.prod
     
 
