@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
-    indexes = [ { 'columns': ['symbol', 'block_number'],
-    'unique': true },{ 'columns': ['_sdc_extracted_at desc'] },]
+    unique_key = 'id',
+    indexes = [ { 'columns': ['symbol', 'block_number'] },{ 'columns': ['_sdc_extracted_at desc'] },]
 ) }}
 
 SELECT
@@ -9,7 +9,8 @@ SELECT
     ON (
         block_number,
         symbol
-    ) block_number,
+    ) {{ dbt_utils.surrogate_key([ 'symbol', 'block_number']) }} AS id,
+    block_number,
     symbol,
     price,
     blocks."timestamp",
