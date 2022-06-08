@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     unique_key = 'block_number',
-    indexes = [ {'columns': ['block_number'] },{ 'columns': ['timestamp'] }]
+    indexes = [ {'columns': ['block_number'] },{ 'columns': ['_sdc_extracted_at desc'] },{ 'columns': ['timestamp'] }]
 ) }}
 
 WITH blocks_with_timestamps AS (
@@ -10,7 +10,8 @@ WITH blocks_with_timestamps AS (
         TO_TIMESTAMP(CAST("timestamp" AS bigint)) AS TIMESTAMP,
         CAST(
             "id" AS bigint
-        ) AS block_number
+        ) AS block_number,
+        _sdc_extracted_at
     FROM
         tap_thegraph.mainnet_block
 )
@@ -28,9 +29,9 @@ FROM
 
 {% if is_incremental() %}
 WHERE
-    block_number > (
+    _sdc_extracted_at > (
         SELECT
-            MAX(block_number)
+            MAX(_sdc_extracted_at)
         FROM
             {{ this }}
     )

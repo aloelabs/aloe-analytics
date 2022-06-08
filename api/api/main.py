@@ -107,7 +107,7 @@ async def get_pool_returns(pool_address: str, chain_id: int, range: str, end_tim
     query = (
         "SELECT timestamps.timestamp, block_number, block_timestamp, pool_address, chain_id, inventory0, inventory1, total_supply "
         "FROM dbt.pool_returns "
-        f"JOIN ({ subquery }) AS timestamps ON block_interval @> to_timestamp(timestamps.timestamp) :: TIMESTAMP "
+        f"JOIN ({ subquery }) AS timestamps ON \"interval\" @> to_timestamp(timestamps.timestamp) :: TIMESTAMP "
         "WHERE pool_address = :pool_address AND chain_id = :chain_id "
         "ORDER BY block_number ASC"
     )

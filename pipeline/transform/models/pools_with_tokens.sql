@@ -1,3 +1,9 @@
+{{ config(
+    materialized = 'table',
+    indexes = [ { 'columns': ['pool_address'],
+    'unique': true }]
+) }}
+
 SELECT
     p.*,
     t0.symbol AS token0_symbol,

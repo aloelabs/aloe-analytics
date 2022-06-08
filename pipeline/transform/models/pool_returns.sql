@@ -1,13 +1,15 @@
 {{ config(
     materialized = 'incremental',
-    indexes = [ { 'columns': ['pool_address', 'chain_id'] },{ 'columns': ['block_number'] },{ 'columns': ['block_interval'],
-    'type': 'GIST' }]
+    unique_key = 'id',
+    indexes = [ { 'columns': ['pool_address', 'chain_id', 'block_number'] },{ 'columns': ['interval'],
+    'type': 'GIST' },{ 'columns': ['_sdc_extracted_at desc'] }]
 ) }}
 
 SELECT
+    {{ dbt_utils.surrogate_key([ 'pool_address', 'chain_id', 'block_number' ]) }} AS id,
     observations.block_number,
-    blocks.interval AS block_interval,
-    blocks.timestamp AS block_timestamp,
+    blocks.interval,
+    blocks.timestamp,
     pools.pool_address,
     pools.pool_type,
     pools.chain_id,
@@ -25,24 +27,26 @@ SELECT
     ) / power(
         10,
         18
-    ) AS total_supply
+    ) AS total_supply,
+    GREATEST(
+        observations._sdc_extracted_at,
+        blocks._sdc_extracted_at
+    ) AS _sdc_extracted_at
 FROM
-    {{ ref(
-        'aloe_blend'
-    ) }}
-    observations
+    {{ ref('observations') }}
     JOIN {{ ref('pools_with_tokens') }}
     pools USING (pool_address)
     JOIN {{ ref('blocks') }} USING (block_number)
 
 {% if is_incremental() %}
 WHERE
-    block_number > (
+    GREATEST(
+        observations._sdc_extracted_at,
+        blocks._sdc_extracted_at
+    ) > (
         SELECT
-            MAX(block_number)
+            MAX(_sdc_extracted_at)
         FROM
             {{ this }}
-        WHERE
-            pool_address = pool_address
     )
 {% endif %}
