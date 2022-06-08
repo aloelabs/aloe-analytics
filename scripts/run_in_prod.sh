@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker compose -f docker-compose.yml -f production.yml up -d
+docker compose -f production.yml up -d
