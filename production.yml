@@ -4,9 +4,11 @@ services:
     image: "${GCR_PATH}/api:latest"
     env_file:
       - ./api/.env.prod
+    build: ''
   pipeline:
     image: "${GCR_PATH}/pipeline:latest"
     env_file:
       - ./pipeline/.env.prod
+    build: ''
     
 
