@@ -1,22 +1,12 @@
 from collections import defaultdict
-from fastapi_cache.decorator import cache
-from itertools import chain, starmap
-import json
 import logging
 from typing import Any, Dict, List
-from venv import create
-from click import echo
 from fastapi import FastAPI
-from fastapi.responses import RedirectResponse, StreamingResponse
 import pendulum
 import databases
 from fastapi.encoders import jsonable_encoder
-from pendulum import duration, time
 from pydantic import BaseSettings
-from sqlalchemy import create_engine
-from sqlalchemy import text
-from sqlalchemy.ext.asyncio import create_async_engine
-
+from pendulum import duration
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.inmemory import InMemoryBackend
 from fastapi_cache.decorator import cache
@@ -40,12 +30,14 @@ settings = Settings()
 
 db = databases.Database(settings.database_url)
 
+logging.basicConfig()
+logging.getLogger("databases").setLevel(logging.DEBUG)
+
 
 @app.on_event("startup")
 async def startup():
     FastAPICache.init(InMemoryBackend(), prefix="fastapi-cache", expire=60)
     await db.connect()
-
 
 @app.on_event("shutdown")
 async def shutdown():
@@ -69,7 +61,7 @@ async def get_deployed_pools(chain_id: int):
 @cache()
 async def get_pool_stats(pool_address: str, chain_id: int):
     query = "SELECT * FROM dbt.pool_stats WHERE pool_address = :pool_address AND chain_id = :chain_id"
-    values = {"pool_address": pool_address, "chain_id": chain_id}
+    values = {"pool_address": pool_address.lower(), "chain_id": chain_id}
     return await db.fetch_all(query=query, values=values)
 
 
@@ -113,18 +105,19 @@ def _generate_subquery_for_range(range: str, end_time: str) -> str:
 async def get_pool_returns(pool_address: str, chain_id: int, range: str, end_time: str):
     subquery = _generate_subquery_for_range(range, end_time)
     query = (
-        "SELECT timestamps.timestamp, block_number, pool_returns.timestamp, pool_address, chain_id, inventory0, inventory1, total_supply "
+        "SELECT timestamps.timestamp, block_number, inventory0, inventory1, total_supply "
         "FROM dbt.pool_returns "
         f"JOIN ({ subquery }) AS timestamps ON \"interval\" @> to_timestamp(timestamps.timestamp) :: TIMESTAMP "
         "WHERE pool_address = :pool_address AND chain_id = :chain_id "
         "ORDER BY block_number ASC"
     )
-    values = {"pool_address": pool_address, "chain_id": chain_id}
+    values = {"pool_address": pool_address.lower(), "chain_id": chain_id}
     return await db.fetch_all(query=query, values=values)
 
 
-@cache()
+
 @app.get("/token_returns/{token_address}/{chain_id}/{range}/{end_time}")
+@cache()
 async def get_token_returns(
     token_address: str, chain_id: int, range: str, end_time: str
 ):
@@ -136,7 +129,7 @@ async def get_token_returns(
         "WHERE token_address = :token_address AND chain_id = :chain_id "
         "ORDER BY timestamps.timestamp ASC"
     )
-    values = {"token_address": token_address, "chain_id": chain_id}
+    values = {"token_address": token_address.lower(), "chain_id": chain_id}
     return await db.fetch_all(query=query, values=values)
 
 
@@ -162,7 +155,7 @@ async def get_share_balances(
         "WHERE user_address = :user_address "
         "ORDER BY timestamps.timestamp ASC"
     )
-    values = {"user_address": user_address}
+    values = {"user_address": user_address.lower()}
     rows = jsonable_encoder(await db.fetch_all(query=query, values=values))
     return _partition_by_key(rows, "pool_address")
 
@@ -178,6 +171,6 @@ async def get_net_deposits(user_address: str, chain_id: int, range: str, end_tim
         "WHERE user_address = :user_address "
         "ORDER BY timestamps.timestamp ASC"
     )
-    values = {"user_address": user_address}
+    values = {"user_address": user_address.lower()}
     rows = jsonable_encoder(await db.fetch_all(query=query, values=values))
     return _partition_by_key(rows, "pool_address")

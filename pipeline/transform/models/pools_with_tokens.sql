@@ -5,7 +5,11 @@
 ) }}
 
 SELECT
-    p.*,
+    LOWER(pool_address) AS pool_address,
+    pool_type,
+    p.chain_id,
+    LOWER(token0_address) AS token0_address,
+    LOWER(token1_address) AS token1_address,
     t0.symbol AS token0_symbol,
     t0.decimals AS token0_decimals,
     t1.symbol AS token1_symbol,
@@ -17,17 +21,9 @@ FROM
         'tokens'
     ) }}
     t0
-    ON LOWER(
-        p.token0_address
-    ) = LOWER(
-        t0.address
-    )
+    ON p.token0_address ILIKE t0.address
     JOIN {{ ref(
         'tokens'
     ) }}
     t1
-    ON LOWER(
-        p.token1_address
-    ) = LOWER(
-        t1.address
-    )
+    ON p.token1_address ILIKE t1.address

@@ -16,7 +16,7 @@ SELECT
     CAST(
         outputs__ AS numeric
     ) AS total_supply,
-    "address" AS pool_address,
+    LOWER("address") AS pool_address,
     total_supply._sdc_extracted_at
 FROM
     tap_ethereum.blend_getters_totalsupply AS total_supply

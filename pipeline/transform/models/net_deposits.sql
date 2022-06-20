@@ -6,11 +6,7 @@ WITH net_deposit_changes AS (
         {{ ref('balance_changes') }}
         JOIN {{ ref('share_price') }}
         ON share_price.block_number = balance_changes.block_number
-        AND LOWER(
-            share_price.pool_address
-        ) = LOWER(
-            balance_changes.pool_address
-        )
+        AND share_price.pool_address ILIKE balance_changes.pool_address
 )
 SELECT
     tsrange(

@@ -43,7 +43,7 @@ SELECT
         FROM
             {{ ref('share_price') }}
         WHERE
-            pools.pool_address = share_price.pool_address
+            pools.pool_address ILIKE share_price.pool_address
         ORDER BY
             block_number DESC
         LIMIT

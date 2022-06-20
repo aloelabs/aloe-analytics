@@ -8,7 +8,7 @@
 SELECT
     {{ dbt_utils.surrogate_key([ 'symbol', 'timestamp']) }} AS id,
     ohlcv.timestamp,
-    tokens.address AS token_address,
+    LOWER(tokens.address) AS token_address,
     tokens.chain_id,
     (
         tsrange(

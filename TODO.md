@@ -1,7 +1,9 @@
 - [ ] Timestamp formatting differs between `token_returns` and `pool_returns`
-- [ ] Make endpoints case-insensitive
+- [X] Make endpoints case-insensitive
 - [ ] Check `net_deposits` calculation
 - [ ] Verify same `end_time` and range yields same series of timestamps
 - [ ] Show `performance_since_inception` and `annual_percentage_rate` calculations
 - [ ] Figure out what is causing API server to hang
 - [ ] Ensure API is up while pipeline is running
+- [ ] Share `aloe_analytics` repo with Aloe Capital github org
+- [X] Improve case comparison efficiency
