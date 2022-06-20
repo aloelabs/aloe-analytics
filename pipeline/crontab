@@ -1,1 +1,1 @@
-* * * * * /usr/bin/flock -n /tmp/my.lockfile /project/scripts/run_pipeline.sh >> /var/log/cron.log 2>&1
+*/30 * * * * /usr/bin/flock -n /tmp/my.lockfile /project/scripts/run_pipeline.sh >> /var/log/cron.log 2>&1

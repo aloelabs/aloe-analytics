@@ -1,5 +1,5 @@
 from collections import defaultdict
-from functools import cache
+from fastapi_cache.decorator import cache
 from itertools import chain, starmap
 import json
 import logging
