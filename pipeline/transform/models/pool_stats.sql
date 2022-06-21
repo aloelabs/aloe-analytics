@@ -62,7 +62,8 @@ SELECT
     ) * 100 AS performance_since_inception,
     1 AS annual_percentage_rate
 FROM
-    {{ ref('pools') }}
+    {{ ref('pools_with_tokens') }}
+    pools
     JOIN before USING (
         pool_address,
         chain_id
