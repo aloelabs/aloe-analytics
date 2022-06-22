@@ -14,25 +14,32 @@ WITH blocks_with_timestamps AS (
         _sdc_extracted_at
     FROM
         tap_thegraph.mainnet_block
+),
+blocks_with_intervals AS (
+    SELECT
+        *,
+        tsrange(
+            "timestamp" :: TIMESTAMP,
+            LEAD(TIMESTAMP) over (
+                ORDER BY
+                    block_number ASC
+            ) :: TIMESTAMP
+        ) AS "interval"
+    FROM
+        blocks_with_timestamps
 )
 SELECT
-    *,
-    tsrange(
-        "timestamp" :: TIMESTAMP,
-        LEAD(TIMESTAMP) over (
-            ORDER BY
-                block_number ASC
-        ) :: TIMESTAMP
-    ) AS "interval"
+    *
 FROM
-    blocks_with_timestamps
+    blocks_with_intervals
+WHERE
+    NOT upper_inf("interval")
 
 {% if is_incremental() %}
-WHERE
-    block_number >= (
-        SELECT
-            MAX(block_number)
-        FROM
-            {{ this }}
-    )
+AND block_number >= (
+    SELECT
+        MAX(block_number)
+    FROM
+        {{ this }}
+)
 {% endif %}
