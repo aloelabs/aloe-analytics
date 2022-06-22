@@ -46,7 +46,7 @@ AND GREATEST(
     pool_returns._sdc_extracted_at,
     p0._sdc_extracted_at,
     p1._sdc_extracted_at
-) > (
+) >= (
     SELECT
         MAX(_sdc_extracted_at)
     FROM

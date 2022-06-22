@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     unique_key = 'block_number',
-    indexes = [ {'columns': ['block_number'] },{ 'columns': ['_sdc_extracted_at desc'] },{ 'columns': ['timestamp'] }]
+    indexes = [ {'columns': ['block_number'] },{ 'columns': ['block_number desc'] },{ 'columns': ['_sdc_extracted_at desc'] },{ 'columns': ['timestamp'] }]
 ) }}
 
 WITH blocks_with_timestamps AS (
@@ -29,9 +29,9 @@ FROM
 
 {% if is_incremental() %}
 WHERE
-    _sdc_extracted_at > (
+    block_number >= (
         SELECT
-            MAX(_sdc_extracted_at)
+            MAX(block_number)
         FROM
             {{ this }}
     )

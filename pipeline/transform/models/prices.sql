@@ -8,7 +8,9 @@
 SELECT
     {{ dbt_utils.surrogate_key([ 'symbol', 'timestamp']) }} AS id,
     ohlcv.timestamp,
-    LOWER(tokens.address) AS token_address,
+    LOWER(
+        tokens.address
+    ) AS token_address,
     tokens.chain_id,
     (
         tsrange(
@@ -30,7 +32,7 @@ FROM
 
 {% if is_incremental() %}
 WHERE
-    ohlcv._sdc_extracted_at > (
+    ohlcv._sdc_extracted_at >= (
         SELECT
             MAX(_sdc_extracted_at)
         FROM

@@ -25,6 +25,9 @@ app.add_middleware(
 class Settings(BaseSettings):
     database_url: str
 
+    class Config:
+        env_file = ".env"
+
 
 settings = Settings()
 
@@ -101,11 +104,10 @@ def _generate_subquery_for_range(range: str, end_time: str) -> str:
 
 
 @app.get("/pool_returns/{pool_address}/{chain_id}/{range}/{end_time}")
-@cache()
 async def get_pool_returns(pool_address: str, chain_id: int, range: str, end_time: str):
     subquery = _generate_subquery_for_range(range, end_time)
     query = (
-        "SELECT timestamps.timestamp, block_number, inventory0, inventory1, total_supply "
+        "SELECT block_number, inventory0, inventory1, total_supply "
         "FROM dbt.pool_returns "
         f"JOIN ({ subquery }) AS timestamps ON \"interval\" @> to_timestamp(timestamps.timestamp) :: TIMESTAMP "
         "WHERE pool_address = :pool_address AND chain_id = :chain_id "
