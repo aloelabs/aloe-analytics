@@ -8,3 +8,4 @@
 - [X] Share `aloe_analytics` repo with Aloe Capital github org
 - [X] Improve case comparison efficiency
 - [X] Figure out why USDC is missing data
+- [ ] Turn on competitors tracking
