@@ -33,7 +33,8 @@ SELECT
         blocks._sdc_extracted_at
     ) AS _sdc_extracted_at
 FROM
-    {{ ref('observations') }}
+    {{ ref('all_observations') }}
+    observations
     JOIN {{ ref('pools_with_tokens') }}
     pools USING (pool_address)
     JOIN {{ ref('blocks') }} USING (block_number)
