@@ -1,11 +1,14 @@
-- [X] Timestamp formatting differs between `token_returns` and `pool_returns`
-- [X] Make endpoints case-insensitive
-- [ ] Check `net_deposits` calculation
-- [X] Verify same `end_time` and `range` yields same series of timestamps
-- [ ] Show `performance_since_inception` and `annual_percentage_rate` calculations
-- [ ] Figure out what is causing API server to hang
-- [ ] Ensure API is up while pipeline is running
-- [X] Share `aloe_analytics` repo with Aloe Capital github org
-- [X] Improve case comparison efficiency
-- [X] Figure out why USDC is missing data
+# Launch-blocking
 - [ ] Turn on competitors tracking
+- [ ] Do `performance_since_inception` and `annual_percentage_rate` calculations
+- [ ] Ensure API is up while pipeline is running
+- [ ] Fix negative balance issue
+
+# Non-urgent
+
+- [ ] Switch from QuikNode to Alchemy (can be done later)
+
+
+# Questions
+
+- Is pool returns the only endpoint that contains competitor data?
