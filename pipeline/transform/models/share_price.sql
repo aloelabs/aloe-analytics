@@ -7,6 +7,7 @@
 SELECT
     {{ dbt_utils.surrogate_key([ 'pool_address', 'pools.chain_id', 'pool_returns.block_number' ]) }} AS id,
     pool_returns.block_number,
+    pool_returns.interval,
     pool_address,
     total_supply,
     inventory0,

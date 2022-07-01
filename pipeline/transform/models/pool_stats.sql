@@ -1,8 +1,8 @@
 {{ config(
     materialized = 'table'
 ) }}
--- Do we have to build an index on total supply?   
-WITH inception AS (
+-- Do we have to build an index on total supply?
+WITH latest AS (
 
     SELECT
         DISTINCT
@@ -12,20 +12,44 @@ WITH inception AS (
         ) *
     FROM
         {{ ref('share_price') }}
-    WHERE
-        total_supply > 0
-        AND LAG(COALESCE(total_supply, 0)) = 0 over (
+    ORDER BY
+        pool_address,
+        chain_id,
+        block_number DESC
+),
+share_price_with_lag AS (
+    SELECT
+        *,
+        LAG(total_supply) over (
             PARTITION BY pool_address,
             chain_id
             ORDER BY
                 block_number ASC
-        )
+        ) AS prev_total_supply
+    FROM
+        {{ ref('share_price') }}
+),
+inception AS (
+    SELECT
+        DISTINCT
+        ON (
+            pool_address,
+            chain_id
+        ) *
+    FROM
+        share_price_with_lag
+    WHERE
+        total_supply > 0
+        AND COALESCE(
+            prev_total_supply,
+            0
+        ) = 0
     ORDER BY
         pool_address,
         chain_id,
         block_number DESC
 ),
-before AS (
+apr_before AS (
     SELECT
         DISTINCT
         ON (
@@ -35,22 +59,11 @@ before AS (
     FROM
         {{ ref('share_price') }}
     WHERE
-        inventory0 > 0
-        OR inventory1 > 0
-),
-after AS (
-    SELECT
-        DISTINCT
-        ON (
-            pool_address,
-            chain_id
-        ) *
-    FROM
-        {{ ref('share_price') }}
+        "interval" @> now() - '{{ var("apr_days") }} DAYS'
     ORDER BY
         pool_address,
         chain_id,
-        block_number DESC
+        block_number ASC
 )
 SELECT
     LOWER(pool_address) AS pool_address,
@@ -69,12 +82,12 @@ SELECT
     ) AS total_value_locked,
     (
         (
-            after.inventory0 + after.inventory1 / (
-                after.token1_price / after.token0_price
+            latest.inventory0 + latest.inventory1 / (
+                latest.token1_price / latest.token0_price
             )
         ) / (
             inception.inventory0 + inception.inventory1 / (
-                after.token1_price / after.token0_price
+                latest.token1_price / latest.token0_price
             )
         ) - 1
     ) * 100 AS performance_since_inception,
@@ -86,7 +99,7 @@ FROM
         pool_address,
         chain_id
     )
-    JOIN after USING (
+    JOIN latest USING (
         pool_address,
         chain_id
     )
