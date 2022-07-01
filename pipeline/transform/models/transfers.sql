@@ -19,17 +19,21 @@ SELECT
     ) AS _sdc_extracted_at
 FROM
     tap_ethereum.blend_events_transfer transfers
+    JOIN {{ ref('pools_with_tokens') }}
+    pools
+    ON transfers.address ILIKE pools.pool_address
     JOIN {{ ref('blocks') }} USING (block_number)
+WHERE
+    pool_type = 'aloe_blend'
 
 {% if is_incremental() %}
-WHERE
-    GREATEST(
-        transfers._sdc_extracted_at,
-        blocks._sdc_extracted_at
-    ) > (
-        SELECT
-            MAX(_sdc_extracted_at)
-        FROM
-            {{ this }}
-    )
+AND GREATEST(
+    transfers._sdc_extracted_at,
+    blocks._sdc_extracted_at
+) > (
+    SELECT
+        MAX(_sdc_extracted_at)
+    FROM
+        {{ this }}
+)
 {% endif %}
