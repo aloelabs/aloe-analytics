@@ -1,9 +1,31 @@
 {{ config(
     materialized = 'table'
 ) }}
+-- Do we have to build an index on total supply?   
+WITH inception AS (
 
-WITH before AS (
-
+    SELECT
+        DISTINCT
+        ON (
+            pool_address,
+            chain_id
+        ) *
+    FROM
+        {{ ref('share_price') }}
+    WHERE
+        total_supply > 0
+        AND LAG(COALESCE(total_supply, 0)) = 0 over (
+            PARTITION BY pool_address,
+            chain_id
+            ORDER BY
+                block_number ASC
+        )
+    ORDER BY
+        pool_address,
+        chain_id,
+        block_number DESC
+),
+before AS (
     SELECT
         DISTINCT
         ON (
@@ -15,10 +37,6 @@ WITH before AS (
     WHERE
         inventory0 > 0
         OR inventory1 > 0
-    ORDER BY
-        pool_address,
-        chain_id,
-        block_number ASC
 ),
 after AS (
     SELECT
@@ -55,7 +73,7 @@ SELECT
                 after.token1_price / after.token0_price
             )
         ) / (
-            before.inventory0 + before.inventory1 / (
+            inception.inventory0 + inception.inventory1 / (
                 after.token1_price / after.token0_price
             )
         ) - 1
@@ -64,7 +82,7 @@ SELECT
 FROM
     {{ ref('pools_with_tokens') }}
     pools
-    JOIN before USING (
+    JOIN inception USING (
         pool_address,
         chain_id
     )
