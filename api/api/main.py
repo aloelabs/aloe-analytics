@@ -80,6 +80,7 @@ ranges = {
     "1m": (duration(months=1), duration(hours=12)),
     "3m": (duration(months=3), duration(days=1)),
     "1y": (duration(years=1), duration(days=3)),
+    "all": (duration(years=3), duration(days=3)),
 }
 
 
@@ -104,6 +105,7 @@ def _generate_subquery_for_range(range: str, end_time: str) -> str:
 
 
 @app.get("/pool_returns/{pool_address}/{chain_id}/{range}/{end_time}")
+@cache()
 async def get_pool_returns(pool_address: str, chain_id: int, range: str, end_time: str):
     subquery = _generate_subquery_for_range(range, end_time)
     query = (
