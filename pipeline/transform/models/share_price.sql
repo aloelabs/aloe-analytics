@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     unique_key = 'id',
-    indexes = [ { 'columns': ['pool_address', 'chain_id', 'block_number desc'],},{ 'columns': ['pool_address', 'chain_id', 'block_number', ] },{ 'columns': ['_sdc_extracted_at desc'] }]
+    indexes = [ { 'columns': ['pool_address', 'chain_id', 'block_number desc'],},{ 'columns': ['pool_address', 'chain_id', 'block_number', ] },{ 'columns': ['_sdc_extracted_at desc'] },{ 'columns': ['total_supply'] }]
 ) }}
 
 SELECT
