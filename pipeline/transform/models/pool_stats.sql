@@ -93,12 +93,12 @@ apr_before AS (
         (
             (
                 (
-                    apr_before.inventory0 * latest.token0_price + apr_before.inventory1 * latest.token1_price
-                ) / apr_before.total_supply
-            ) / (
-                (
                     latest.inventory0 * latest.token0_price + latest.inventory1 * latest.token1_price
                 ) / latest.total_supply
+            ) / (
+                (
+                    apr_before.inventory0 * latest.token0_price + apr_before.inventory1 * latest.token1_price
+                ) / apr_before.total_supply
             ) - 1
         ) / {{ var("apr_days") }} * 365 AS annual_percentage_rate
     FROM
