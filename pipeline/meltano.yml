@@ -6,7 +6,7 @@ plugins:
   extractors:
   - name: tap-ccxt
     namespace: tap_ccxt
-    pip_url: git+ssh://git@github.com/superkeyio/tap-ccxt.git@8adddf761e66167c98e6109ab435b8830ba10f48
+    pip_url: git+https://git@github.com/superkeyio/tap-ccxt.git@8adddf761e66167c98e6109ab435b8830ba10f48
     capabilities:
     - state
     - catalog
@@ -57,7 +57,7 @@ plugins:
           start_date: '2022-02-26T00:00:00Z'
   - name: tap-ethereum
     namespace: tap_ethereum
-    pip_url: git+ssh://git@github.com/superkeyio/tap-ethereum.git@074885f6951f6e92f77f8bf0327eb55addf3d489
+    pip_url: git+https://git@github.com/superkeyio/tap-ethereum.git@074885f6951f6e92f77f8bf0327eb55addf3d489
     capabilities:
     - state
     - catalog
@@ -144,7 +144,7 @@ plugins:
         - totalSupply
   - name: tap-thegraph
     namespace: tap_thegraph
-    pip_url: git+ssh://git@github.com/superkeyio/tap-thegraph.git@91923fbf60d305afa6ff849b88798b72961a5a70
+    pip_url: git+https://git@github.com/superkeyio/tap-thegraph.git@91923fbf60d305afa6ff849b88798b72961a5a70
     capabilities:
     - state
     - catalog
