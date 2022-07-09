@@ -12,4 +12,8 @@ RUN poetry install --no-dev
 
 COPY ./api /code/api
 
-CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "80"]
+# SSL
+COPY cert.pem /code
+COPY privkey.pem /code
+
+CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "80", "--ssl-keyfile", "/code/privkey.pem", "--ssl-certfile", "/code/cert.pem"]
