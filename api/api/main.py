@@ -85,6 +85,8 @@ ranges = {
     "all": (duration(years=3), duration(days=3)),
 }
 
+# Basically it has to do a linear scan to find the correct ones so it might as well take a long time
+
 
 def _generate_series(range: str, end_time: str) -> List[str]:
     series = []
@@ -104,6 +106,9 @@ def _generate_subquery_for_range(range: str, end_time: str) -> str:
         f'SELECT * FROM (VALUES {",".join(values_list) }) AS timestamps ("timestamp")'
     )
     return subquery
+
+
+# How to do sampling efficiently?
 
 
 @app.get("/pool_returns/{pool_address}/{chain_id}/{range}/{end_time}")

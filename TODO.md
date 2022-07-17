@@ -1,3 +1,5 @@
 - [ ] Reduce storage quota on GCP
 - [ ] Figure out why queries block like this
-  - First thing to try is just to query for the entire range 
+  - First thing to try is just to query for the entire range
+  - Index things differently?
+  - Fundamentally  
