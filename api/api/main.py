@@ -16,11 +16,12 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['*'],
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
     allow_credentials=False,
 )
+
 
 class Settings(BaseSettings):
     database_url: str
@@ -41,6 +42,7 @@ logging.getLogger("databases").setLevel(logging.DEBUG)
 async def startup():
     FastAPICache.init(InMemoryBackend(), prefix="fastapi-cache", expire=60)
     await db.connect()
+
 
 @app.on_event("shutdown")
 async def shutdown():
@@ -83,6 +85,8 @@ ranges = {
     "all": (duration(years=3), duration(days=3)),
 }
 
+# Basically it has to do a linear scan to find the correct ones so it might as well take a long time
+
 
 def _generate_series(range: str, end_time: str) -> List[str]:
     series = []
@@ -98,10 +102,11 @@ def _generate_series(range: str, end_time: str) -> List[str]:
 def _generate_subquery_for_range(range: str, end_time: str) -> str:
     timestamps = _generate_series(range, end_time)
     values_list = list(map(lambda t: f"({t} :: int8)", timestamps))
-    subquery = (
-        f'SELECT * FROM (VALUES {",".join(values_list) }) AS timestamps ("timestamp")'
-    )
+    subquery = f'SELECT * FROM (VALUES {",".join(values_list) }) AS timestamps ("timestamp") ORDER BY "timestamp"'
     return subquery
+
+
+# How to do sampling efficiently?
 
 
 @app.get("/pool_returns/{pool_address}/{chain_id}/{range}/{end_time}")
@@ -111,13 +116,12 @@ async def get_pool_returns(pool_address: str, chain_id: int, range: str, end_tim
     query = (
         "SELECT timestamps.timestamp, block_number, inventory0, inventory1, total_supply "
         "FROM dbt.pool_returns "
-        f"JOIN ({ subquery }) AS timestamps ON \"interval\" @> to_timestamp(timestamps.timestamp) :: TIMESTAMP "
+        f'JOIN ({ subquery }) AS timestamps ON "interval" @> to_timestamp(timestamps.timestamp) :: TIMESTAMP '
         "WHERE pool_address = :pool_address AND chain_id = :chain_id "
         "ORDER BY block_number ASC"
     )
     values = {"pool_address": pool_address.lower(), "chain_id": chain_id}
     return await db.fetch_all(query=query, values=values)
-
 
 
 @app.get("/token_returns/{token_address}/{chain_id}/{range}/{end_time}")
