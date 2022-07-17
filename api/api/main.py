@@ -102,9 +102,7 @@ def _generate_series(range: str, end_time: str) -> List[str]:
 def _generate_subquery_for_range(range: str, end_time: str) -> str:
     timestamps = _generate_series(range, end_time)
     values_list = list(map(lambda t: f"({t} :: int8)", timestamps))
-    subquery = (
-        f'SELECT * FROM (VALUES {",".join(values_list) }) AS timestamps ("timestamp")'
-    )
+    subquery = f'SELECT * FROM (VALUES {",".join(values_list) }) AS timestamps ("timestamp") ORDER BY "timestamp"'
     return subquery
 
 

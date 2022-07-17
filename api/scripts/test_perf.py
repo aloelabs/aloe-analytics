@@ -18,8 +18,8 @@ pools = r.json()
 
 print([pools])
 
-for pool in tqdm(pools[3:]):
-    url = f'{base_url}/pool_returns/{pool["pool_address"]}/{pool["chain_id"]}/1w/{round(time.time())}'
+for pool in tqdm(pools):
+    url = f'{base_url}/pool_returns/{pool["pool_address"]}/{pool["chain_id"]}/1m/{round(time.time())}'
     print(url)
     r = requests.get(url)
     print(r.json())
