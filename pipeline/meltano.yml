@@ -31,8 +31,10 @@ plugins:
           quote: USDT
           timeframe: 1m
           start_date: '2022-02-08T00:00:00Z'
+      - id: bkex
+        pairs:
         - base: OSQTH
-          quote: USD
+          quote: USDT
           timeframe: 1m
           start_date: '2022-09-08T00:00:00Z'
       - id: gateio
