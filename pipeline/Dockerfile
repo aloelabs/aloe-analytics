@@ -28,9 +28,9 @@ COPY ./meltano.yml .
 RUN --mount=type=ssh meltano install
 
 RUN npm i -g graphql-api-to-json-schema npm-cli-login
-# RUN NPM_USER=${NPM_USER} NPM_PASS=${NPM_PASS} NPM_EMAIL=${NPM_EMAIL} NPM_SCOPE=${NPM_SCOPE} NPM_REGISTRY=https://npm.pkg.github.com npm-cli-login
-# RUN npm i -g @superkeyio/block-gobbler
-RUN npm i -g https://github.com/superkeyio/block-gobbler
+RUN NPM_USER=${NPM_USER} NPM_PASS=${NPM_PASS} NPM_EMAIL=${NPM_EMAIL} NPM_SCOPE=${NPM_SCOPE} NPM_REGISTRY=https://npm.pkg.github.com npm-cli-login
+RUN npm i -g @aloelabs/block-gobbler
+ENV PATH="/usr/local/lib/node_modules/.bin:$PATH"
 
 # Pin `discovery.yml` manifest by copying cached version to project root
 RUN cp -n .meltano/cache/discovery.yml . 2>/dev/null || :
