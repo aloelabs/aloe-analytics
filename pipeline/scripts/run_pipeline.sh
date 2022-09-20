@@ -14,4 +14,6 @@ meltano run tap-ethereum target-postgres
 meltano run tap-thegraph target-postgres
 
 # Run dbt transforms
-meltano run dbt-postgres:seed dbt-postgres:run 
+meltano invoke dbt-postgres:deps
+meltano invoke dbt-postgres:seed
+meltano run dbt-postgres:seed dbt-postgres:run

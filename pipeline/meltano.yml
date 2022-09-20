@@ -37,6 +37,10 @@ plugins:
           quote: USDT
           timeframe: 1m
           start_date: '2022-09-08T00:00:00Z'
+        - base: OSQTH
+          quote: USDT
+          timeframe: 1h
+          start_date: '2022-09-08T00:00:00Z'
       - id: gateio
         pairs:
         - base: FEI
