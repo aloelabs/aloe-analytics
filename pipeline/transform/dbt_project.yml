@@ -26,5 +26,4 @@ models:
   my_meltano_project:
     +on_schema_change: "sync_all_columns"
 vars:
-  apr_days: 14
-
+  apr_days: 1
