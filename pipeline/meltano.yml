@@ -106,6 +106,9 @@ plugins:
           address: '0xd41e2eB322A183C5bfeD9CeBFDB7bD0DFCfc040f'
           start_block: 15499023
         - name: WETH/oSQTH 0.30% eWETH eoSQTH
+          address: '0xd41e2eB322A183C5bfeD9CeBFDB7bD0DFCfc040f'
+          start_block: 15499023
+        - name: WETH/oSQTH 0.30% eWETH eoSQTH v2
           address: '0xe53555FDBe3B38455671794b2280b7Fa357C6b48'
           start_block: 15599363
         events:
