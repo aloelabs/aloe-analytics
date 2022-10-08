@@ -27,10 +27,24 @@ plugins:
           quote: USDT
           timeframe: 1m
           start_date: '2022-02-08T00:00:00Z'
+      - id: bkex
+        pairs:
+        - base: OSQTH
+          quote: USDT
+          timeframe: 1m
+          start_date: '2022-09-08T00:00:00Z'
+        - base: OSQTH
+          quote: USDT
+          timeframe: 1h
+          start_date: '2022-09-08T00:00:00Z'
         - base: USDC
           quote: USDT
           timeframe: 1m
-          start_date: '2022-02-08T00:00:00Z'
+          start_date: '2022-09-25T00:00:00Z'
+        - base: USDC
+          quote: USDT
+          timeframe: 1h
+          start_date: '2022-09-25T00:00:00Z'
       - id: gateio
         pairs:
         - base: FEI
@@ -92,6 +106,15 @@ plugins:
         - name: WETH/LOOKS 0.30% cETH LooksRare Staking
           address: '0x021016FbB4d3AAeaA440508C5E06Ce8c1039FCCD'
           start_block: 14279169
+        - name: WETH/oSQTH 0.30% eWETH eoSQTH
+          address: '0xd41e2eB322A183C5bfeD9CeBFDB7bD0DFCfc040f'
+          start_block: 15499023
+        - name: WETH/oSQTH 0.30% eWETH eoSQTH
+          address: '0xd41e2eB322A183C5bfeD9CeBFDB7bD0DFCfc040f'
+          start_block: 15499023
+        - name: WETH/oSQTH 0.30% eWETH eoSQTH v2
+          address: '0xe53555FDBe3B38455671794b2280b7Fa357C6b48'
+          start_block: 15599363
         events:
         - Transfer
         getters:

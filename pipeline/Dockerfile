@@ -14,6 +14,7 @@ RUN apt-get update -y && apt-get install -y openssh-client git cron curl
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash
 
 RUN apt-get -y install nodejs
+RUN apt-get -y install libpq-dev libpq5
 
 # download public key for github.com
 RUN mkdir -p -m 0600 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
@@ -28,7 +29,8 @@ RUN --mount=type=ssh meltano install
 
 RUN npm i -g graphql-api-to-json-schema npm-cli-login
 RUN NPM_USER=${NPM_USER} NPM_PASS=${NPM_PASS} NPM_EMAIL=${NPM_EMAIL} NPM_SCOPE=${NPM_SCOPE} NPM_REGISTRY=https://npm.pkg.github.com npm-cli-login
-RUN npm i -g @superkeyio/block-gobbler
+RUN npm i -g @aloelabs/block-gobbler
+ENV PATH="/usr/local/lib/node_modules/.bin:$PATH"
 
 # Pin `discovery.yml` manifest by copying cached version to project root
 RUN cp -n .meltano/cache/discovery.yml . 2>/dev/null || :
